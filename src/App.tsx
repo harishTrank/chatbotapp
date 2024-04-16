@@ -1,16 +1,16 @@
-import React from 'react';
+import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import './App.css';
-// import Signup from './Screens/Signup';
-import Login from './Screens/Login';
+import Login from "./Screens/Login";
 
 function App() {
-    return (
-        <div className="App">
-            {/* <Signup /> */}
-            <Login />
-        </div>
-    );
+  return (
+    <div className="App">
+      <ToastContainer autoClose={2000} />
+      <Login />
+    </div>
+  );
 }
 
 export default App;
