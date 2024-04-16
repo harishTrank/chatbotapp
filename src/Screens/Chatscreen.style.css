@@ -46,7 +46,8 @@
     font-size: 15px
 }
 
-.people-list .chat-list img {
+.people-list .chat-list img,
+.all-users .clearfix img {
     width: 45px;
     border-radius: 50%
 }
@@ -203,85 +204,32 @@
     height: 0
 }
 
-/* .input-group {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
+.all-users {
+    position: absolute;
     width: 100%;
+    height: 250px;
+    overflow: auto;
+    background: #fff;
+    box-shadow: 0px 0px 5px #ececec;
+    z-index: 99;
+    top: 38px;
+    left: 0;
 }
 
-.input-group-prepend {
-    display: flex;
+.all-users ul {
+    padding-left: 0;
 }
 
-.input-group-text {
-    display: flex;
-    align-items: center;
-    padding: .375rem .75rem;
-    margin-bottom: 0;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    text-align: center;
-    white-space: nowrap;
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
+.all-users li {
+    list-style: none;
+    padding: 10px;
+    border-radius: 5px;
 }
 
-.input-group>.form-control {
-    position: relative;
-    flex: 1 1 auto;
-    width: 1%;
-    min-width: 0;
-    margin-bottom: 0;
-}
-
-.form-control {
-    display: block;
-    width: 100%;
-    height: calc(1.5em + .75rem + 2px);
-    padding: .375rem .75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
-    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-}
-
-.btn:not(:disabled):not(.disabled) {
+.all-users li:hover {
+    background: #efefef;
     cursor: pointer;
 }
-
-.btn-outline-secondary {
-    color: #6c757d;
-    border-color: #6c757d;
-}
-
-.btn {
-    display: inline-block;
-    font-weight: 400;
-    color: #212529;
-    text-align: center;
-    vertical-align: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    background-color: transparent;
-    border: 1px solid transparent;
-    padding: .375rem .75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: .25rem;
-    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-} */
 
 @media only screen and (max-width: 767px) {
     .chat-app .people-list {
@@ -325,7 +273,7 @@
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 1) {
     .chat-app .chat-list {
-         height: 480px; 
+        /* height: 480px; */
         overflow-x: auto
     }
 
