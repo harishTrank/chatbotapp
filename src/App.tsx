@@ -30,10 +30,12 @@ function App() {
             path="/login"
             element={!isLoggedIn ? <Login /> : <Navigate to="/chat" />}
           />
-          <Route
-            path="/chat"
-            element={isLoggedIn ? <Chatscreen /> : <Navigate to="/login" />}
-          />
+          {isLoggedIn && (
+            <>
+              <Route path="/chat" element={<Chatscreen />} />
+              <Route path="/chat/:id" element={<Chatscreen />} />
+            </>
+          )}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>

@@ -1,32 +1,29 @@
-.card {
+.card-people {
     background: #fff;
     transition: .5s;
     border: 0;
-    margin-bottom: 30px;
     border-radius: .55rem;
     position: relative;
     width: 100%;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
+    display: flex;
 }
 
 .chat-app .people-list {
     width: 280px;
-    position: absolute;
-    left: 0;
-    top: 0;
     padding: 20px;
-    z-index: 7
 }
 
 .chat-app .chat {
-    margin-left: 280px;
-    border-left: 1px solid #eaeaea
+    width: calc(100% - 280px);
+    border-left: 1px solid #eaeaea;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .people-list {
-    -moz-transition: .5s;
-    -o-transition: .5s;
-    -webkit-transition: .5s;
     transition: .5s
 }
 
@@ -328,7 +325,7 @@
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 1) {
     .chat-app .chat-list {
-        height: 480px;
+         height: 480px; 
         overflow-x: auto
     }
 

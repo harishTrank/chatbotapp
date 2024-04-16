@@ -7,7 +7,7 @@ function Chatscreen() {
       <div className="container-fluid">
         <div className="row clearfix">
           <div className="col-lg-12">
-            <div className="card chat-app">
+            <div className="card-people chat-app">
               <div id="plist" className="people-list">
                 <div className="input-group">
                   <div className="input-group-prepend">

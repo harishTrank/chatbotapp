@@ -33,6 +33,9 @@ function Login() {
     })
       .then((res: any) => {
         sessionStorage.setItem("accessToken", res?.accessToken);
+        sessionStorage.setItem("userData", JSON.stringify(res?.getUser));
+        window.location.href = "/chat";
+        window.location.reload();
         toast.success("Login successfully");
       })
       ?.catch((err: any) => toast.error(err.data.message));
