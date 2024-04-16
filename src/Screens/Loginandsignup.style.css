@@ -95,10 +95,6 @@ form.sign-in-form {
     transition: 0.5s;
 }
 
-.btn:hover {
-    background-color: #f98c39;
-}
-
 .panels-container {
     position: absolute;
     height: 100%;
