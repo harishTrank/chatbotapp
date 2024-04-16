@@ -33,6 +33,7 @@ function Login() {
     })
       .then((res: any) => {
         sessionStorage.setItem("accessToken", res?.accessToken);
+        sessionStorage.setItem("userData", JSON.stringify(res?.getUser));
         toast.success("Login successfully");
       })
       ?.catch((err: any) => toast.error(err.data.message));
@@ -78,150 +79,147 @@ function Login() {
   };
   //-----------------
   return (
-    <>
-      <div className={`container ${containerFlag ? "sign-up-mode" : ""}`}>
-        <div className="forms-container">
-          <div className="signin-signup">
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              {({ isSubmitting }) => (
-                <Form className="sign-in-form">
-                  <h2 className="title">Log In</h2>
-                  <div className="input-field">
-                    <i className="fas fa-envelope"></i>
-                    <Field type="email" name="email" placeholder="Email" />
-                  </div>
-                  <ErrorMessage
-                    name="email"
-                    component="div"
-                    className="error-message"
-                  />
-                  <div className="input-field">
-                    <i className="fas fa-lock"></i>
-                    <Field
-                      type="password"
-                      name="password"
-                      placeholder="Password"
-                    />
-                  </div>
-                  <ErrorMessage
+    <div className={`container ${containerFlag ? "sign-up-mode" : ""}`}>
+      <div className="forms-container">
+        <div className="signin-signup">
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isSubmitting }) => (
+              <Form className="sign-in-form">
+                <h2 className="title">Log In</h2>
+                <div className="input-field">
+                  <i className="fas fa-envelope"></i>
+                  <Field type="email" name="email" placeholder="Email" />
+                </div>
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="error-message"
+                />
+                <div className="input-field">
+                  <i className="fas fa-lock"></i>
+                  <Field
+                    type="password"
                     name="password"
-                    component="div"
-                    className="error-message"
+                    placeholder="Password"
                   />
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="btn solid"
-                  >
-                    {isSubmitting ? "Logging in..." : "Login"}
-                  </button>
-                </Form>
-              )}
-            </Formik>
+                </div>
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="error-message"
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn solid"
+                >
+                  {isSubmitting ? "Logging in..." : "Login"}
+                </button>
+              </Form>
+            )}
+          </Formik>
 
-            <Formik
-              initialValues={initialValuesSignUp}
-              validationSchema={validationSchemaSignUp}
-              onSubmit={handleSubmitSignUp}
-            >
-              {({ isSubmitting }) => (
-                <Form className="sign-up-form">
-                  <h2 className="title">Sign up</h2>
-                  <div className="input-field">
-                    <i className="fas fa-user"></i>
-                    <Field type="text" name="name" placeholder="Name" />
-                  </div>
-                  <ErrorMessage
-                    name="name"
-                    component="div"
-                    className="error-message"
-                  />
-                  <div className="input-field">
-                    <i className="fas fa-envelope"></i>
-                    <Field type="email" name="username" placeholder="Email" />
-                  </div>
-                  <ErrorMessage
-                    name="username"
-                    component="div"
-                    className="error-message"
-                  />
-                  <div className="input-field">
-                    <i className="fas fa-lock"></i>
-                    <Field
-                      type="password"
-                      name="password"
-                      placeholder="Password"
-                    />
-                  </div>
-                  <ErrorMessage
+          <Formik
+            initialValues={initialValuesSignUp}
+            validationSchema={validationSchemaSignUp}
+            onSubmit={handleSubmitSignUp}
+          >
+            {({ isSubmitting }) => (
+              <Form className="sign-up-form">
+                <h2 className="title">Sign up</h2>
+                <div className="input-field">
+                  <i className="fas fa-user"></i>
+                  <Field type="text" name="name" placeholder="Name" />
+                </div>
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="error-message"
+                />
+                <div className="input-field">
+                  <i className="fas fa-envelope"></i>
+                  <Field type="email" name="username" placeholder="Email" />
+                </div>
+                <ErrorMessage
+                  name="username"
+                  component="div"
+                  className="error-message"
+                />
+                <div className="input-field">
+                  <i className="fas fa-lock"></i>
+                  <Field
+                    type="password"
                     name="password"
-                    component="div"
-                    className="error-message"
+                    placeholder="Password"
                   />
-                  <div className="input-field">
-                    <i className="fas fa-lock"></i>
-                    <Field
-                      type="password"
-                      name="confirmPassword"
-                      placeholder="Confirm Password"
-                    />
-                  </div>
-                  <ErrorMessage
+                </div>
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="error-message"
+                />
+                <div className="input-field">
+                  <i className="fas fa-lock"></i>
+                  <Field
+                    type="password"
                     name="confirmPassword"
-                    component="div"
-                    className="error-message"
+                    placeholder="Confirm Password"
                   />
-                  <button type="submit" disabled={isSubmitting} className="btn">
-                    {isSubmitting ? "Signing up..." : "Sign up"}
-                  </button>
-                </Form>
-              )}
-            </Formik>
-          </div>
-        </div>
-        <div className="panels-container">
-          <div className="panel left-panel">
-            <div className="content">
-              <h3>New to our community ?</h3>
-              <p>
-                Discover a world of possibilities! Join us and explore a vibrant
-                community where ideas flourish and connections thrive.
-              </p>
-              <button className="btn transparent" onClick={singUpHandler}>
-                Sign up
-              </button>
-            </div>
-            <img
-              src="https://i.ibb.co/6HXL6q1/Privacy-policy-rafiki.png"
-              className="image"
-              alt=""
-            />
-          </div>
-          <div className="panel right-panel">
-            <div className="content">
-              <h3>One of Our Valued Members</h3>
-              <p>
-                Thank you for being part of our community. Your presence
-                enriches our shared experiences. Let's continue this journey
-                together!
-              </p>
-              <button className="btn transparent" onClick={singInHandler}>
-                Log in
-              </button>
-            </div>
-            <img
-              src="https://i.ibb.co/nP8H853/Mobile-login-rafiki.png"
-              className="image"
-              alt=""
-            />
-          </div>
+                </div>
+                <ErrorMessage
+                  name="confirmPassword"
+                  component="div"
+                  className="error-message"
+                />
+                <button type="submit" disabled={isSubmitting} className="btn">
+                  {isSubmitting ? "Signing up..." : "Sign up"}
+                </button>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
-    </>
+      <div className="panels-container">
+        <div className="panel left-panel">
+          <div className="content">
+            <h3>New to our community ?</h3>
+            <p>
+              Discover a world of possibilities! Join us and explore a vibrant
+              community where ideas flourish and connections thrive.
+            </p>
+            <button className="btn transparent" onClick={singUpHandler}>
+              Sign up
+            </button>
+          </div>
+          <img
+            src="https://i.ibb.co/6HXL6q1/Privacy-policy-rafiki.png"
+            className="image"
+            alt=""
+          />
+        </div>
+        <div className="panel right-panel">
+          <div className="content">
+            <h3>One of Our Valued Members</h3>
+            <p>
+              Thank you for being part of our community. Your presence enriches
+              our shared experiences. Let's continue this journey together!
+            </p>
+            <button className="btn transparent" onClick={singInHandler}>
+              Log in
+            </button>
+          </div>
+          <img
+            src="https://i.ibb.co/nP8H853/Mobile-login-rafiki.png"
+            className="image"
+            alt=""
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 

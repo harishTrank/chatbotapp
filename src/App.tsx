@@ -1,15 +1,43 @@
-import "./App.css";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
+import { useEffect, useState } from "react";
 import Login from "./Screens/Login";
 
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkUserLoginFlag = () => {
+      const token = sessionStorage.getItem("accessToken");
+      if (token) {
+        setIsLoggedIn(true);
+      }
+    };
+    checkUserLoginFlag();
+  }, []);
+
   return (
-    <div className="App">
-      <ToastContainer autoClose={2000} />
-      <Login />
-    </div>
+    <>
+      <Router>
+        <Routes>
+          <Route
+            path="/login"
+            element={!isLoggedIn ? <Login /> : <Navigate to="/chat" />}
+          />
+          <Route
+            path="/chat"
+            element={isLoggedIn ? <Login /> : <Navigate to="/login" />}
+          />
+          {/* Redirect to login if no route matches */}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
