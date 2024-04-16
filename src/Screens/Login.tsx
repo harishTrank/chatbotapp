@@ -71,8 +71,9 @@ function Login() {
       .then((res: any) => {
         singInHandler();
         resetForm();
+        toast.success("Sign up successfully");
       })
-      .catch((err: any) => console.log("err", err));
+      .catch((err: any) => toast.error(err.data.message));
     setSubmitting(false);
   };
   //-----------------
