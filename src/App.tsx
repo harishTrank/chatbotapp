@@ -7,6 +7,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import Chatscreen from "./Screens/Chatscreen";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -31,7 +32,7 @@ function App() {
           />
           <Route
             path="/chat"
-            element={isLoggedIn ? <Login /> : <Navigate to="/login" />}
+            element={isLoggedIn ? <Chatscreen /> : <Navigate to="/login" />}
           />
           {/* Redirect to login if no route matches */}
           <Route path="*" element={<Navigate to="/login" />} />
