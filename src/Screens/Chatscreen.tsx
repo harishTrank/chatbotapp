@@ -1,19 +1,84 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import "./Chatscreen.style.css"
+import { createConversation, searchUseApi } from '../Services/Api/Services/Auth';
 
 function Chatscreen() {
+    const [searchFlag, setSearchFlag] = useState(false);
+    const [searchText, setSearchText] = useState("");
+    const [userList, setUserList] = useState([]);
+
+    const onChangeHandler = (text: any) => {
+        setSearchText(text);
+        if (text.length > 0) {
+            setSearchFlag(true);
+        }
+        else {
+            setSearchFlag(false);
+        }
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            searchUseApi({
+                query: {
+                    search: searchText
+                }
+            }).then((res: any) => {
+                setUserList(res.response);
+            }).catch((err: any) => {
+                console.log('err', err)
+            })
+        }, 1000)
+    }, [searchText])
+
+    const searchUserClickHandler = (userId: any) => {
+        const userData: any = sessionStorage.getItem("userData");
+        const myUserId: any = JSON.parse(userData)._id;
+
+        createConversation({
+            body: {
+                usersList: [myUserId, userId]
+            }
+        }).then((res: any) => {
+            console.log('res', res)
+        }).catch((err) => {
+            console.log('err', err)
+        })
+    }
+
+
+
     return (
         <>
             <div className="container-fluid">
                 <div className="row clearfix">
                     <div className="col-lg-12">
-                        <div className="card chat-app">
+                        <div className="card-people chat-app">
                             <div id="plist" className="people-list">
                                 <div className="input-group">
+                                    <input type="text" className="form-control" onChange={(text: any) => onChangeHandler(text.target.value)} placeholder="Search..." />
+                                    <div className="all-users" style={{
+                                        display: searchFlag ? "block" : "none"
+                                    }}>
+                                        <ul>
+                                            {userList && userList.map((item: any) => {
+                                                return (
+                                                    <li key={item._id} onClick={() => searchUserClickHandler(item._id)} className="clearfix">
+                                                        <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar" />
+                                                        <div className="about"><div className="name">{item.name}</div>
+                                                            <div className="status">
+                                                                <i className={`fa fa-circle ${item.status === "online" ? "online" : "offline"}`}></i>
+                                                                {item.status}
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    </div>
                                     <div className="input-group-prepend">
                                         <span className="input-group-text"><i className="fa fa-search"></i></span>
                                     </div>
-                                    <input type="text" className="form-control" placeholder="Search..." />
                                 </div>
                                 <ul className="list-unstyled chat-list mt-2 mb-0">
                                     <li className="clearfix">
@@ -73,10 +138,10 @@ function Chatscreen() {
                                             </div>
                                         </div>
                                         <div className="col-lg-6 hidden-sm text-right">
-                                            <a href="javascript:void(0);" className="btn btn-outline-secondary"><i className="fa fa-camera"></i></a>
-                                            <a href="javascript:void(0);" className="btn btn-outline-primary"><i className="fa fa-image"></i></a>
+                                            <a href="javascript:void(0);" className="btn btn-outline-secondary mr-2"><i className="fa fa-file"></i></a>
+                                            <a href="javascript:void(0);" className="btn btn-outline-primary mr-2"><i className="fa fa-user-group"></i></a>
+                                            <a href="javascript:void(0);" className="btn btn-outline-primary mr-2"><i className="fa fa-image"></i></a>
                                             <a href="javascript:void(0);" className="btn btn-outline-info"><i className="fa fa-cogs"></i></a>
-                                            <a href="javascript:void(0);" className="btn btn-outline-warning"><i className="fa fa-question"></i></a>
                                         </div>
                                     </div>
                                 </div>
