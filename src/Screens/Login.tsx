@@ -79,7 +79,7 @@ function Login() {
   //-----------------
   return (
     <>
-      <div className={`container ${containerFlag ? "sign-up-mode" : ""}`}>
+      <div className={`login-area ${containerFlag ? "sign-up-mode" : ""}`}>
         <div className="forms-container">
           <div className="signin-signup">
             <Formik
@@ -115,7 +115,7 @@ function Login() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="btn solid"
+                    className="btn-login solid"
                   >
                     {isSubmitting ? "Logging in..." : "Login"}
                   </button>
@@ -175,7 +175,7 @@ function Login() {
                     component="div"
                     className="error-message"
                   />
-                  <button type="submit" disabled={isSubmitting} className="btn">
+                  <button type="submit" disabled={isSubmitting} className="btn-login">
                     {isSubmitting ? "Signing up..." : "Sign up"}
                   </button>
                 </Form>
@@ -191,7 +191,7 @@ function Login() {
                 Discover a world of possibilities! Join us and explore a vibrant
                 community where ideas flourish and connections thrive.
               </p>
-              <button className="btn transparent" onClick={singUpHandler}>
+              <button className="btn-login transparent" onClick={singUpHandler}>
                 Sign up
               </button>
             </div>
@@ -209,7 +209,7 @@ function Login() {
                 enriches our shared experiences. Let's continue this journey
                 together!
               </p>
-              <button className="btn transparent" onClick={singInHandler}>
+              <button className="btn-login transparent" onClick={singInHandler}>
                 Log in
               </button>
             </div>

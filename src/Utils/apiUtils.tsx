@@ -2,7 +2,8 @@ import Axios from "axios";
 import queryString from "querystring";
 
 export const hostname = () => {
-  let hostUrl = "http://localhost:5000/api/";
+  // let hostUrl = "http://localhost:5000/api/";
+  let hostUrl = "http://192.168.0.71:5000/api/";
 
   return hostUrl;
 };
@@ -201,7 +202,7 @@ export interface UriEndPoint {
   headerProps?: HeaderPropsOrPathParamsOrQueryOrBody;
   apiKey?: string;
 }
-interface HeaderPropsOrPathParamsOrQueryOrBody {}
+interface HeaderPropsOrPathParamsOrQueryOrBody { }
 
 export interface UriEndPointWithVersions {
   v1: UriEndPoint;
