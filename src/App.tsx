@@ -34,7 +34,6 @@ function App() {
             path="/chat"
             element={isLoggedIn ? <Chatscreen /> : <Navigate to="/login" />}
           />
-          {/* Redirect to login if no route matches */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
