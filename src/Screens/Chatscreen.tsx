@@ -205,16 +205,15 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                              (item: any) => item._id !== myUserId
-                            );
+                            (item: any) => item._id !== myUserId
+                          );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${
-                            getCurrentUserData?._id === getOtherUser?._id &&
+                          className={`clearfix ${getCurrentUserData?._id === getOtherUser?._id &&
                             "active"
-                          }`}
+                            }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id)
                           }
@@ -225,17 +224,16 @@ function Chatscreen() {
                             <div className="status">
                               {" "}
                               <i
-                                className={`fa fa-circle ${
-                                  getOtherUser?.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                }`}
+                                className={`fa fa-circle ${getOtherUser?.status === "online"
+                                  ? "online"
+                                  : "offline"
+                                  }`}
                               ></i>{" "}
                               {getOtherUser?.status === "online"
                                 ? "online"
                                 : `Last seen: ${dayjs(
-                                    getOtherUser?.updated_at
-                                  ).fromNow()}`}
+                                  getOtherUser?.updated_at
+                                ).fromNow()}`}
                             </div>
                           </div>
                         </li>

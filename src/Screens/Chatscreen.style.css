@@ -64,7 +64,7 @@
 
 .people-list .status {
     color: #999;
-    font-size: 12px
+    font-size: 11px
 }
 
 .chat .chat-header {
@@ -113,7 +113,7 @@
 
 .chat .chat-history .message-data-time {
     color: #434651;
-    padding-left: 6px;
+    padding-right: 6px;
     font-size: 13px;
 }
 
