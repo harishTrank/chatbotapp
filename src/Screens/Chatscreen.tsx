@@ -195,8 +195,11 @@ function Chatscreen() {
 
   return (
     <>
-      {groupPopupFlag &&
-        <Groupmodal />
+      {
+        groupPopupFlag &&
+        <Groupmodal setGroupPopupFlag={
+          setGroupPopupFlag
+        } />
       }
       <div className="container-fluid">
         <div className="row clearfix">
@@ -339,9 +342,11 @@ function Chatscreen() {
                           >
                             <i className="fa fa-file"></i>
                           </a>
-                          <a href="#" className="btn btn-outline-primary mr-2">
+                          <div onClick={() =>
+                            setGroupPopupFlag(!groupPopupFlag)
+                          } className="btn btn-outline-primary mr-2">
                             <i className="fa fa-user-group"></i>
-                          </a>
+                          </div>
                           <a href="#" className="btn btn-outline-primary mr-2">
                             <i className="fa fa-image"></i>
                           </a>
@@ -359,64 +364,79 @@ function Chatscreen() {
                     </div>
                   </div>
                 </div>
-                <div className="chat-history">
-                  <ul className="m-b-0">
-                    <li className="clearfix">
-                      <div className="message-data text-right">
-                        <span className="message-data-time">
-                          10:10 AM, Today
-                        </span>
-                        <img src={defaultImage} alt="avatar" />
-                      </div>
-                      <div className="message other-message float-right">
-                        {" "}
-                        Hi Aiden, how are you? How is the project coming along?{" "}
-                      </div>
-                    </li>
-                    <li className="clearfix">
-                      <div className="message-data">
-                        <span className="message-data-time">
-                          10:12 AM, Today
-                        </span>
-                      </div>
-                      <div className="message my-message">
-                        Are we meeting today?
-                      </div>
-                    </li>
-                    <li className="clearfix">
-                      <div className="message-data">
-                        <span className="message-data-time">
-                          10:15 AM, Today
-                        </span>
-                      </div>
-                      <div className="message my-message">
-                        Project has been already finished and I have results to
-                        show you.
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-                <div className="chat-message clearfix">
-                  <div className="input-group mb-0">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter text here..."
-                      value={messageInput}
-                      onChange={(event: any) =>
-                        setMessageInput(event.target.value)
-                      }
-                    />
-                    <div
-                      onClick={sendMessageHandler}
-                      className="input-group-prepend"
-                    >
-                      <span className="input-group-text">
-                        <i className="fa-solid fa-paper-plane"></i>
-                      </span>
+                {getCurrentUserData?._id ? (
+                  <>
+                    <div className="chat-history">
+                      <ul className="m-b-0">
+                        {messageListResult &&
+                          messageListResult?.map((record: any) => {
+                            const myMessage = myUserId === record?.sender?._id;
+                            return (
+                              <li key={record?._id} className="clearfix">
+                                <div
+                                  className={`message-data ${myMessage && "text-right"
+                                    }`}
+                                >
+                                  <span className="message-data-time">
+                                    {dayjs(record?.created_at).format(
+                                      "hh:mm A"
+                                    )}
+                                  </span>
+
+                                </div>
+                                <div
+                                  className={`message ${myMessage
+                                    ? "other-message float-right"
+                                    : "my-message"
+                                    }`}
+                                >
+                                  {record?.message}
+                                </div>
+                              </li>
+                            );
+                          })}
+                      </ul>
                     </div>
+                    <div className="chat-message clearfix">
+                      <div className="input-group mb-0">
+                        <div
+                          onClick={sendMessageHandler}
+                          className="input-group-prepend"
+                        >
+                          <span className="input-group-text">
+                            <i className="fa-solid fa-paper-plane"></i>
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter text here..."
+                          value={messageInput}
+                          onChange={(event: any) =>
+                            setMessageInput(event.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src={defaultBackImage}
+                      style={{
+                        width: "50%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

@@ -96,16 +96,16 @@
 
 .chat .chat-history ul li {
     list-style: none;
-    margin-bottom: 30px
+    margin-bottom: 10px
 }
 
 .chat .chat-history ul li:last-child {
     margin-bottom: 0px
 }
 
-.chat .chat-history .message-data {
+/* .chat .chat-history .message-data {
     margin-bottom: 15px
-}
+} */
 
 .chat .chat-history .message-data img {
     border-radius: 40px;
@@ -120,7 +120,7 @@
 
 .chat .chat-history .message {
     color: #444;
-    padding: 15px 15px;
+    padding: 10px;
     font-size: 14px;
     border-radius: 7px;
     display: inline-block;
