@@ -1,4 +1,4 @@
-import { defaults } from "../../default";
+import { defaults } from "../default";
 
 export const authEndpoints = {
   registration: {
@@ -27,6 +27,13 @@ export const authEndpoints = {
       ...defaults.methods.POST,
       ...defaults.versions.v1,
       uri: "message/conversation",
+    },
+  },
+  getSingleUser: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "user/getuser",
     },
   },
 };

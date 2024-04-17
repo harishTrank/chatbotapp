@@ -2,13 +2,27 @@ import React, { useEffect, useState } from "react";
 import "./Chatscreen.style.css";
 import {
   createConversation,
+  getSingleUser,
   searchUseApi,
-} from "../Services/Api/Services/Auth";
+} from "../Services/Api/Services";
+import {
+  disconnectSocket,
+  joinConversation,
+  sendMessage,
+} from "../Services/Socket";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import defaultImage from "../images/avatar1.png";
+import { toast } from "react-toastify";
 
 function Chatscreen() {
+  dayjs.extend(relativeTime);
   const [searchFlag, setSearchFlag] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [userList, setUserList] = useState([]);
+  const [getCurrentUserData, setCurrentUserData]: any = useState({});
+  const [messageInput, setMessageInput]: any = useState("");
+  const [conversationID, setConversationID]: any = useState("");
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -45,11 +59,50 @@ function Chatscreen() {
       },
     })
       .then((res: any) => {
-        console.log("res", res);
+        joinConversation({
+          userId: myUserId,
+          conversationId: res.data._id,
+        });
+        setConversationID(res.data._id);
+        getSingleUser({
+          query: {
+            userId,
+          },
+        })
+          .then((res: any) => {
+            setCurrentUserData(res.response);
+            setSearchText("");
+            setSearchFlag(false);
+          })
+          .catch((err) => console.log("err", err));
       })
       .catch((err) => {
         console.log("err", err);
       });
+  };
+
+  const logoutBtnHandler = () => {
+    sessionStorage.removeItem("userData");
+    sessionStorage.removeItem("accessToken");
+    disconnectSocket();
+    window.location.href = "/login";
+    window.location.reload();
+  };
+
+  const sendMessageHandler = () => {
+    if (messageInput?.length === 0) {
+      return toast.error("Please enter message first..");
+    }
+    const userDetails: any = sessionStorage.getItem("userData");
+    const myUserId = JSON.parse(userDetails)._id;
+    sendMessage({
+      senderId: myUserId,
+      receiverId: getCurrentUserData._id,
+      type: "text",
+      conversationId: conversationID,
+      message: messageInput,
+    });
+    setMessageInput("");
   };
 
   return (
@@ -63,6 +116,7 @@ function Chatscreen() {
                   <input
                     type="text"
                     className="form-control"
+                    value={searchText}
                     onChange={(text: any) => onChangeHandler(text.target.value)}
                     placeholder="Search..."
                   />
@@ -81,10 +135,7 @@ function Chatscreen() {
                               onClick={() => searchUserClickHandler(item._id)}
                               className="clearfix"
                             >
-                              <img
-                                src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                                alt="avatar"
-                              />
+                              <img src={defaultImage} alt="avatar" />
                               <div className="about">
                                 <div className="name">{item.name}</div>
                                 <div className="status">
@@ -111,10 +162,7 @@ function Chatscreen() {
                 </div>
                 <ul className="list-unstyled chat-list mt-2 mb-0">
                   <li className="clearfix">
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                      alt="avatar"
-                    />
+                    <img src={defaultImage} alt="avatar" />
                     <div className="about">
                       <div className="name">Vincent Porter</div>
                       <div className="status">
@@ -125,10 +173,7 @@ function Chatscreen() {
                     </div>
                   </li>
                   <li className="clearfix active">
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                      alt="avatar"
-                    />
+                    <img src={defaultImage} alt="avatar" />
                     <div className="about">
                       <div className="name">Aiden Chavez</div>
                       <div className="status">
@@ -138,10 +183,7 @@ function Chatscreen() {
                     </div>
                   </li>
                   <li className="clearfix">
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                      alt="avatar"
-                    />
+                    <img src={defaultImage} alt="avatar" />
                     <div className="about">
                       <div className="name">Mike Thomas</div>
                       <div className="status">
@@ -151,10 +193,7 @@ function Chatscreen() {
                     </div>
                   </li>
                   <li className="clearfix">
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar7.png"
-                      alt="avatar"
-                    />
+                    <img src={defaultImage} alt="avatar" />
                     <div className="about">
                       <div className="name">Christian Kelly</div>
                       <div className="status">
@@ -165,10 +204,7 @@ function Chatscreen() {
                     </div>
                   </li>
                   <li className="clearfix">
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar8.png"
-                      alt="avatar"
-                    />
+                    <img src={defaultImage} alt="avatar" />
                     <div className="about">
                       <div className="name">Monica Ward</div>
                       <div className="status">
@@ -178,10 +214,7 @@ function Chatscreen() {
                     </div>
                   </li>
                   <li className="clearfix">
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                      alt="avatar"
-                    />
+                    <img src={defaultImage} alt="avatar" />
                     <div className="about">
                       <div className="name">Dean Henry</div>
                       <div className="status">
@@ -197,46 +230,58 @@ function Chatscreen() {
                 <div className="chat-header clearfix">
                   <div className="row">
                     <div className="col-lg-6">
-                      <a
-                        href="javascript:void(0);"
-                        data-toggle="modal"
-                        data-target="#view_info"
-                      >
-                        <img
-                          src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                          alt="avatar"
-                        />
-                      </a>
-                      <div className="chat-about">
-                        <h6 className="m-b-0">Aiden Chavez</h6>
-                        <small>Last seen: 2 hours ago</small>
-                      </div>
+                      {getCurrentUserData?._id && (
+                        <>
+                          <a
+                            href="#"
+                            data-toggle="modal"
+                            data-target="#view_info"
+                          >
+                            <img
+                              src={
+                                getCurrentUserData?.avatar_url
+                                  ? getCurrentUserData?.avatar_url
+                                  : defaultImage
+                              }
+                              alt="avatar"
+                            />
+                          </a>
+
+                          <div className="chat-about">
+                            <h6 className="m-b-0">
+                              {getCurrentUserData?.name}
+                            </h6>
+                            <small>
+                              {getCurrentUserData?.status?.toLowerCase() ===
+                              "online"
+                                ? getCurrentUserData?.status
+                                : `Last seen: ${dayjs(
+                                    getCurrentUserData?.updated_at
+                                  ).fromNow()}`}
+                            </small>
+                          </div>
+                        </>
+                      )}
                     </div>
                     <div className="col-lg-6 hidden-sm text-right">
-                      <a
-                        href="javascript:void(0);"
-                        className="btn btn-outline-secondary mr-2"
-                      >
+                      <a href="#" className="btn btn-outline-secondary mr-2">
                         <i className="fa fa-file"></i>
                       </a>
-                      <a
-                        href="javascript:void(0);"
-                        className="btn btn-outline-primary mr-2"
-                      >
+                      <a href="#" className="btn btn-outline-primary mr-2">
                         <i className="fa fa-user-group"></i>
                       </a>
-                      <a
-                        href="javascript:void(0);"
-                        className="btn btn-outline-primary mr-2"
-                      >
+                      <a href="#" className="btn btn-outline-primary mr-2">
                         <i className="fa fa-image"></i>
                       </a>
-                      <a
-                        href="javascript:void(0);"
-                        className="btn btn-outline-info"
-                      >
+                      <a href="#" className="btn btn-outline-info mr-2">
                         <i className="fa fa-cogs"></i>
                       </a>
+                      <div
+                        onClick={logoutBtnHandler}
+                        className="btn btn-outline-danger"
+                      >
+                        <i className="fa-solid fa-right-from-bracket"></i>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -247,10 +292,7 @@ function Chatscreen() {
                         <span className="message-data-time">
                           10:10 AM, Today
                         </span>
-                        <img
-                          src="https://bootdey.com/img/Content/avatar/avatar7.png"
-                          alt="avatar"
-                        />
+                        <img src={defaultImage} alt="avatar" />
                       </div>
                       <div className="message other-message float-right">
                         {" "}
@@ -282,7 +324,10 @@ function Chatscreen() {
                 </div>
                 <div className="chat-message clearfix">
                   <div className="input-group mb-0">
-                    <div className="input-group-prepend">
+                    <div
+                      onClick={sendMessageHandler}
+                      className="input-group-prepend"
+                    >
                       <span className="input-group-text">
                         <i className="fa-solid fa-paper-plane"></i>
                       </span>
@@ -291,6 +336,10 @@ function Chatscreen() {
                       type="text"
                       className="form-control"
                       placeholder="Enter text here..."
+                      value={messageInput}
+                      onChange={(event: any) =>
+                        setMessageInput(event.target.value)
+                      }
                     />
                   </div>
                 </div>

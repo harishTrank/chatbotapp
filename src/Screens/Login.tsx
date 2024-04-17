@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Loginandsignup.style.css";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { userLogin, userRegistration } from "../Services/Api/Services/Auth";
+import { userLogin, userRegistration } from "../Services/Api/Services";
 import { toast } from "react-toastify";
 
 function Login() {

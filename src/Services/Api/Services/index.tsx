@@ -1,5 +1,5 @@
-import { callApi } from "../../../../Utils/apiUtils";
-import { authEndpoints } from "../../EndPoints/Auth";
+import { callApi } from "../../../Utils/apiUtils";
+import { authEndpoints } from "../EndPoints";
 
 export const userRegistration = ({ body }: any) =>
   callApi({
@@ -21,4 +21,10 @@ export const createConversation = ({ body }: any) =>
   callApi({
     uriEndPoint: authEndpoints.createConversation.v1,
     body,
+  });
+
+export const getSingleUser = ({ query }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.getSingleUser.v1,
+    query,
   });

@@ -8,18 +8,34 @@ import {
   Navigate,
 } from "react-router-dom";
 import Chatscreen from "./Screens/Chatscreen";
+import { connectSocket, disconnectSocket, heartBeat } from "./Services/Socket";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
+    let interval: any;
     const checkUserLoginFlag = () => {
       const token = sessionStorage.getItem("accessToken");
       if (token) {
         setIsLoggedIn(true);
+        connectSocket();
+        const userData: any = sessionStorage.getItem("userData");
+        const currentUserId = JSON.parse(userData)._id;
+        interval = setInterval(() => {
+          heartBeat({
+            userId: currentUserId,
+          });
+        }, 10000);
       }
     };
     checkUserLoginFlag();
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+      disconnectSocket();
+    };
   }, []);
 
   return (
