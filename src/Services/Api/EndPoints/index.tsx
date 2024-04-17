@@ -43,4 +43,18 @@ export const authEndpoints = {
       uri: "user/getuser",
     },
   },
+  messageList: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "message",
+    },
+  },
+  latestMessageList: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "message/current",
+    },
+  },
 };

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./Chatscreen.style.css";
 import {
   createConversation,
-  getConversationList,
   getSingleUser,
+  latestMessageList,
+  messageList,
   searchUseApi,
 } from "../Services/Api/Services";
 import {
@@ -20,16 +21,20 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import defaultImage from "../images/avatar1.png";
 import { toast } from "react-toastify";
+import defaultBackImage from "../images/defaultback.png";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
   const [searchFlag, setSearchFlag] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [userList, setUserList] = useState([]);
+  const [myUserId, setMyUserId]: any = useState("");
   const [getCurrentUserData, setCurrentUserData]: any = useState({});
   const [messageInput, setMessageInput]: any = useState("");
   const [conversationID, setConversationID]: any = useState("");
   const [conversationResult, setConversationResult]: any = useState([]);
+  const [messageListResult, setMessageListResult]: any = useState([]);
+  const [startMessageValue, setStartMessageValue]: any = useState(0);
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -56,10 +61,28 @@ function Chatscreen() {
     }, 1000);
   }, [searchText]);
 
-  const searchUserClickHandler = (userId: any) => {
-    const userData: any = sessionStorage.getItem("userData");
-    const myUserId: any = JSON.parse(userData)._id;
+  // get message listing
+  useEffect(() => {
+    setMessageListResult([]);
+  }, [conversationID]);
 
+  const getMessageListRecord = (conversation: any) => {
+    messageList({
+      query: {
+        conversationId: conversation,
+        _start: startMessageValue,
+        _limit: 50,
+      },
+    })
+      .then((res: any) => {
+        setMessageListResult((oldValue: any) => {
+          return [...res.data.messages.reverse(), ...oldValue];
+        });
+      })
+      .catch((err: any) => console.log("err", err));
+  };
+
+  const searchUserClickHandler = (userId: any) => {
     createConversation({
       body: {
         usersList: [myUserId, userId],
@@ -71,6 +94,7 @@ function Chatscreen() {
           conversationId: res.data._id,
         });
         setConversationID(res.data._id);
+        getMessageListRecord(res.data._id);
         getSingleUser({
           query: {
             userId,
@@ -100,8 +124,6 @@ function Chatscreen() {
     if (messageInput?.length === 0) {
       return toast.error("Please enter message first..");
     }
-    const userDetails: any = sessionStorage.getItem("userData");
-    const myUserId = JSON.parse(userDetails)._id;
     sendMessage({
       senderId: myUserId,
       receiverId: getCurrentUserData._id,
@@ -110,17 +132,45 @@ function Chatscreen() {
       message: messageInput,
     });
     setMessageInput("");
+    setTimeout(() => {
+      latestMessageList({
+        query: {
+          conversationId: conversationID,
+        },
+      })
+        .then((res: any) => {
+          setMessageListResult((oldValue: any) => {
+            return [...oldValue, res.data];
+          });
+        })
+        .catch((err: any) => console.log("err", err));
+    }, 500);
   };
 
   const receiveMessageHandler = (data: any) => {
-    console.log("data", data);
+    setTimeout(() => {
+      latestMessageList({
+        query: {
+          conversationId: conversationID,
+          messageId: data?.latestMessageId,
+        },
+      })
+        .then((res: any) => {
+          setMessageListResult((oldValue: any) => {
+            return [...oldValue, res.data];
+          });
+        })
+        .catch((err: any) => console.log("err", err));
+    }, 500);
   };
 
   useEffect(() => {
     let interval: any;
     receiveMessage(receiveMessageHandler);
+    setMessageListResult([]);
     const userDetails: any = sessionStorage.getItem("userData");
     const myUserId = JSON.parse(userDetails)._id;
+    setMyUserId(myUserId);
     interval = setInterval(() => {
       conversationListRecordHit({
         userId: myUserId,
@@ -198,9 +248,6 @@ function Chatscreen() {
                 <ul className="list-unstyled chat-list mt-2 mb-0">
                   {conversationResult &&
                     conversationResult?.map((record: any) => {
-                      const userDetails: any =
-                        sessionStorage.getItem("userData");
-                      const myUserId = JSON.parse(userDetails)._id;
                       const getOtherUser =
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
@@ -340,18 +387,6 @@ function Chatscreen() {
                       <div className="message my-message">
                         Project has been already finished and I have results to
                         show you.
-                      </div>
-                    </li>
-                    <li className="clearfix">
-                      <div className="message-data text-right">
-                        <span className="message-data-time">
-                          10:10 AM, Today
-                        </span>
-                        <img src={defaultImage} alt="avatar" />
-                      </div>
-                      <div className="message other-message float-right">
-                        {" "}
-                        Hi Aiden, how are you? How is the project coming along?{" "}
                       </div>
                     </li>
                   </ul>
