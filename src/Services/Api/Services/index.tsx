@@ -40,3 +40,9 @@ export const messageList = ({ query }: any) =>
     uriEndPoint: authEndpoints.messageList.v1,
     query,
   });
+
+export const latestMessageList = ({ query }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.latestMessageList.v1,
+    query,
+  });
