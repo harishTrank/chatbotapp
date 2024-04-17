@@ -132,21 +132,36 @@ function Chatscreen() {
       message: messageInput,
     });
     setMessageInput("");
-    latestMessageList({
-      query: {
-        conversationId: conversationID,
-      },
-    })
-      .then((res: any) => {
-        setMessageListResult((oldValue: any) => {
-          return [...oldValue, res.data];
-        });
+    setTimeout(() => {
+      latestMessageList({
+        query: {
+          conversationId: conversationID,
+        },
       })
-      .catch((err: any) => console.log("err", err));
+        .then((res: any) => {
+          setMessageListResult((oldValue: any) => {
+            return [...oldValue, res.data];
+          });
+        })
+        .catch((err: any) => console.log("err", err));
+    }, 500);
   };
 
   const receiveMessageHandler = (data: any) => {
-    console.log("data", data);
+    setTimeout(() => {
+      latestMessageList({
+        query: {
+          conversationId: conversationID,
+          messageId: data?.latestMessageId,
+        },
+      })
+        .then((res: any) => {
+          setMessageListResult((oldValue: any) => {
+            return [...oldValue, res.data];
+          });
+        })
+        .catch((err: any) => console.log("err", err));
+    }, 500);
   };
 
   useEffect(() => {
