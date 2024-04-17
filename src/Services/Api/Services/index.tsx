@@ -34,3 +34,9 @@ export const getSingleUser = ({ query }: any) =>
     uriEndPoint: authEndpoints.getSingleUser.v1,
     query,
   });
+
+export const messageList = ({ query }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.messageList.v1,
+    query,
+  });

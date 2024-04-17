@@ -4,6 +4,7 @@ import {
   createConversation,
   getConversationList,
   getSingleUser,
+  messageList,
   searchUseApi,
 } from "../Services/Api/Services";
 import {
@@ -30,6 +31,7 @@ function Chatscreen() {
   const [messageInput, setMessageInput]: any = useState("");
   const [conversationID, setConversationID]: any = useState("");
   const [conversationResult, setConversationResult]: any = useState([]);
+  const [messageListResult, setMessageListResult]: any = useState([]);
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -56,6 +58,23 @@ function Chatscreen() {
     }, 1000);
   }, [searchText]);
 
+  // get message listing
+  useEffect(() => {
+    setMessageListResult([]);
+  }, [conversationID]);
+
+  const getMessageListRecord = (conversation: any) => {
+    messageList({
+      query: {
+        conversationId: conversation,
+        _start: 0,
+        _limit: 50,
+      },
+    })
+      .then((res: any) => setMessageListResult(res.data.messages))
+      .catch((err: any) => console.log("err", err));
+  };
+
   const searchUserClickHandler = (userId: any) => {
     const userData: any = sessionStorage.getItem("userData");
     const myUserId: any = JSON.parse(userData)._id;
@@ -70,7 +89,8 @@ function Chatscreen() {
           userId: myUserId,
           conversationId: res.data._id,
         });
-        setConversationID(res.data._id);
+        setConversationID();
+        getMessageListRecord(res.data._id);
         getSingleUser({
           query: {
             userId,
@@ -119,6 +139,7 @@ function Chatscreen() {
   useEffect(() => {
     let interval: any;
     receiveMessage(receiveMessageHandler);
+    setMessageListResult([]);
     const userDetails: any = sessionStorage.getItem("userData");
     const myUserId = JSON.parse(userDetails)._id;
     interval = setInterval(() => {
