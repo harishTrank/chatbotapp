@@ -2,12 +2,16 @@ import React, { useEffect, useState } from "react";
 import "./Chatscreen.style.css";
 import {
   createConversation,
+  getConversationList,
   getSingleUser,
   searchUseApi,
 } from "../Services/Api/Services";
 import {
   disconnectSocket,
   joinConversation,
+  leaveConversation,
+  receiveMessage,
+  receiveMessageOff,
   sendMessage,
 } from "../Services/Socket";
 import dayjs from "dayjs";
@@ -23,6 +27,21 @@ function Chatscreen() {
   const [getCurrentUserData, setCurrentUserData]: any = useState({});
   const [messageInput, setMessageInput]: any = useState("");
   const [conversationID, setConversationID]: any = useState("");
+  const [conversationResult, setConversationResult]: any = useState([]);
+
+  const getConversationListHandler = () => {
+    const userDetails: any = sessionStorage.getItem("userData");
+    const myUserId = JSON.parse(userDetails)._id;
+    getConversationList({
+      query: {
+        userId: myUserId,
+      },
+    })
+      .then((res: any) => {
+        setConversationResult(res.conversations);
+      })
+      .catch((err: any) => console.log("err", err));
+  };
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -105,6 +124,24 @@ function Chatscreen() {
     setMessageInput("");
   };
 
+  const receiveMessageHandler = (data: any) => {
+    console.log("data", data);
+  };
+
+  useEffect(() => {
+    getConversationListHandler();
+    receiveMessage(receiveMessageHandler);
+
+    return () => {
+      receiveMessageOff();
+      const userDetails: any = sessionStorage.getItem("userData");
+      const myUserId = JSON.parse(userDetails)._id;
+      leaveConversation({
+        userId: myUserId,
+      });
+    };
+  }, []);
+
   return (
     <>
       <div className="container-fluid">
@@ -161,69 +198,41 @@ function Chatscreen() {
                   </div>
                 </div>
                 <ul className="list-unstyled chat-list mt-2 mb-0">
-                  <li className="clearfix">
-                    <img src={defaultImage} alt="avatar" />
-                    <div className="about">
-                      <div className="name">Vincent Porter</div>
-                      <div className="status">
-                        {" "}
-                        <i className="fa fa-circle offline"></i> last seen 7
-                        mins ago{" "}
-                      </div>
-                    </div>
-                  </li>
-                  <li className="clearfix active">
-                    <img src={defaultImage} alt="avatar" />
-                    <div className="about">
-                      <div className="name">Aiden Chavez</div>
-                      <div className="status">
-                        {" "}
-                        <i className="fa fa-circle online"></i> online{" "}
-                      </div>
-                    </div>
-                  </li>
-                  <li className="clearfix">
-                    <img src={defaultImage} alt="avatar" />
-                    <div className="about">
-                      <div className="name">Mike Thomas</div>
-                      <div className="status">
-                        {" "}
-                        <i className="fa fa-circle online"></i> online{" "}
-                      </div>
-                    </div>
-                  </li>
-                  <li className="clearfix">
-                    <img src={defaultImage} alt="avatar" />
-                    <div className="about">
-                      <div className="name">Christian Kelly</div>
-                      <div className="status">
-                        {" "}
-                        <i className="fa fa-circle offline"></i> last seen 10
-                        hours ago{" "}
-                      </div>
-                    </div>
-                  </li>
-                  <li className="clearfix">
-                    <img src={defaultImage} alt="avatar" />
-                    <div className="about">
-                      <div className="name">Monica Ward</div>
-                      <div className="status">
-                        {" "}
-                        <i className="fa fa-circle online"></i> online{" "}
-                      </div>
-                    </div>
-                  </li>
-                  <li className="clearfix">
-                    <img src={defaultImage} alt="avatar" />
-                    <div className="about">
-                      <div className="name">Dean Henry</div>
-                      <div className="status">
-                        {" "}
-                        <i className="fa fa-circle offline"></i> offline since
-                        Oct 28{" "}
-                      </div>
-                    </div>
-                  </li>
+                  {conversationResult &&
+                    conversationResult?.map((record: any) => {
+                      const userDetails: any =
+                        sessionStorage.getItem("userData");
+                      const myUserId = JSON.parse(userDetails)._id;
+                      const getOtherUser =
+                        record?.membersInfo?.length === 1
+                          ? record?.membersInfo?.[0]
+                          : record?.membersInfo?.find(
+                              (item: any) => item._id !== myUserId
+                            );
+                      return (
+                        <li key={record?._id} className="clearfix active">
+                          <img src={defaultImage} alt="avatar" />
+                          <div className="about">
+                            <div className="name">{getOtherUser?.name}</div>
+                            <div className="status">
+                              {" "}
+                              <i
+                                className={`fa fa-circle ${
+                                  getOtherUser?.status === "online"
+                                    ? "online"
+                                    : "offline"
+                                }`}
+                              ></i>{" "}
+                              {getOtherUser?.status === "online"
+                                ? "online"
+                                : `Last seen: ${dayjs(
+                                    getOtherUser?.updated_at
+                                  ).fromNow()}`}
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
                 </ul>
               </div>
               <div className="chat">
@@ -264,18 +273,25 @@ function Chatscreen() {
                       )}
                     </div>
                     <div className="col-lg-6 hidden-sm text-right">
-                      <a href="#" className="btn btn-outline-secondary mr-2">
-                        <i className="fa fa-file"></i>
-                      </a>
-                      <a href="#" className="btn btn-outline-primary mr-2">
-                        <i className="fa fa-user-group"></i>
-                      </a>
-                      <a href="#" className="btn btn-outline-primary mr-2">
-                        <i className="fa fa-image"></i>
-                      </a>
-                      <a href="#" className="btn btn-outline-info mr-2">
-                        <i className="fa fa-cogs"></i>
-                      </a>
+                      {getCurrentUserData?._id && (
+                        <>
+                          <a
+                            href="#"
+                            className="btn btn-outline-secondary mr-2"
+                          >
+                            <i className="fa fa-file"></i>
+                          </a>
+                          <a href="#" className="btn btn-outline-primary mr-2">
+                            <i className="fa fa-user-group"></i>
+                          </a>
+                          <a href="#" className="btn btn-outline-primary mr-2">
+                            <i className="fa fa-image"></i>
+                          </a>
+                          <a href="#" className="btn btn-outline-info mr-2">
+                            <i className="fa fa-cogs"></i>
+                          </a>
+                        </>
+                      )}
                       <div
                         onClick={logoutBtnHandler}
                         className="btn btn-outline-danger"

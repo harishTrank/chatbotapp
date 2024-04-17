@@ -24,8 +24,12 @@ const sendMessage = (callback: any) => {
   socket.emit("send message", callback);
 };
 
-const receiveMessage = () => {
-  socket.emit("send message");
+const receiveMessage = (callback: any) => {
+  socket.on("send message", callback);
+};
+
+const receiveMessageOff = () => {
+  socket.off("send message");
 };
 // ---------------------------------------------
 
@@ -41,4 +45,5 @@ export {
   sendMessage,
   receiveMessage,
   heartBeat,
+  receiveMessageOff,
 };
