@@ -12,11 +12,11 @@
 .chat-app .people-list {
     width: 280px;
     padding: 20px;
+    border-right: 1px solid #eaeaea;
 }
 
 .chat-app .chat {
     width: calc(100% - 280px);
-    border-left: 1px solid #eaeaea;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -85,7 +85,8 @@
 
 .chat .chat-history {
     padding: 20px;
-    border-bottom: 2px solid #fff
+    border-bottom: 2px solid #fff;
+    overflow: auto;
 }
 
 .chat .chat-history ul {

@@ -140,11 +140,10 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${
-                                      item.status === "online"
-                                        ? "online"
-                                        : "offline"
-                                    }`}
+                                    className={`fa fa-circle ${item.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                      }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -253,11 +252,11 @@ function Chatscreen() {
                             </h6>
                             <small>
                               {getCurrentUserData?.status?.toLowerCase() ===
-                              "online"
+                                "online"
                                 ? getCurrentUserData?.status
                                 : `Last seen: ${dayjs(
-                                    getCurrentUserData?.updated_at
-                                  ).fromNow()}`}
+                                  getCurrentUserData?.updated_at
+                                ).fromNow()}`}
                             </small>
                           </div>
                         </>
@@ -318,6 +317,18 @@ function Chatscreen() {
                       <div className="message my-message">
                         Project has been already finished and I have results to
                         show you.
+                      </div>
+                    </li>
+                    <li className="clearfix">
+                      <div className="message-data text-right">
+                        <span className="message-data-time">
+                          10:10 AM, Today
+                        </span>
+                        <img src={defaultImage} alt="avatar" />
+                      </div>
+                      <div className="message other-message float-right">
+                        {" "}
+                        Hi Aiden, how are you? How is the project coming along?{" "}
                       </div>
                     </li>
                   </ul>
