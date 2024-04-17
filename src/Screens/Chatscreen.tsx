@@ -7,6 +7,8 @@ import {
   searchUseApi,
 } from "../Services/Api/Services";
 import {
+  conversationListRecordGet,
+  conversationListRecordHit,
   disconnectSocket,
   joinConversation,
   leaveConversation,
@@ -28,20 +30,6 @@ function Chatscreen() {
   const [messageInput, setMessageInput]: any = useState("");
   const [conversationID, setConversationID]: any = useState("");
   const [conversationResult, setConversationResult]: any = useState([]);
-
-  const getConversationListHandler = () => {
-    const userDetails: any = sessionStorage.getItem("userData");
-    const myUserId = JSON.parse(userDetails)._id;
-    getConversationList({
-      query: {
-        userId: myUserId,
-      },
-    })
-      .then((res: any) => {
-        setConversationResult(res.conversations);
-      })
-      .catch((err: any) => console.log("err", err));
-  };
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -129,8 +117,18 @@ function Chatscreen() {
   };
 
   useEffect(() => {
-    getConversationListHandler();
+    let interval: any;
     receiveMessage(receiveMessageHandler);
+    const userDetails: any = sessionStorage.getItem("userData");
+    const myUserId = JSON.parse(userDetails)._id;
+    interval = setInterval(() => {
+      conversationListRecordHit({
+        userId: myUserId,
+      });
+    }, 1000);
+    conversationListRecordGet((data: any) => {
+      setConversationResult(data);
+    });
 
     return () => {
       receiveMessageOff();
@@ -139,6 +137,7 @@ function Chatscreen() {
       leaveConversation({
         userId: myUserId,
       });
+      clearInterval(interval);
     };
   }, []);
 
@@ -208,8 +207,18 @@ function Chatscreen() {
                           : record?.membersInfo?.find(
                               (item: any) => item._id !== myUserId
                             );
+
                       return (
-                        <li key={record?._id} className="clearfix active">
+                        <li
+                          key={record?._id}
+                          className={`clearfix ${
+                            getCurrentUserData?._id === getOtherUser?._id &&
+                            "active"
+                          }`}
+                          onClick={() =>
+                            searchUserClickHandler(getOtherUser?._id)
+                          }
+                        >
                           <img src={defaultImage} alt="avatar" />
                           <div className="about">
                             <div className="name">{getOtherUser?.name}</div>

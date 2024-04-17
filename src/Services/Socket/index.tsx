@@ -28,6 +28,14 @@ const receiveMessage = (callback: any) => {
   socket.on("send message", callback);
 };
 
+const conversationListRecordHit = (callback: any) => {
+  socket.emit("conversation list", callback);
+};
+
+const conversationListRecordGet = (callback: any) => {
+  socket.on("conversation list", callback);
+};
+
 const receiveMessageOff = () => {
   socket.off("send message");
 };
@@ -46,4 +54,6 @@ export {
   receiveMessage,
   heartBeat,
   receiveMessageOff,
+  conversationListRecordHit,
+  conversationListRecordGet,
 };

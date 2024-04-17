@@ -48,7 +48,7 @@
 
 .people-list .chat-list img,
 .all-users .clearfix img {
-    width: 45px;
+    width: 40px;
     border-radius: 50%
 }
 
@@ -59,12 +59,12 @@
 
 .people-list .about {
     float: left;
-    padding-left: 8px
+    padding-left: 5px
 }
 
 .people-list .status {
     color: #999;
-    font-size: 13px
+    font-size: 12px
 }
 
 .chat .chat-header {
