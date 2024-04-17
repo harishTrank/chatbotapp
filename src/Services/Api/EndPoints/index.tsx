@@ -29,6 +29,13 @@ export const authEndpoints = {
       uri: "message/conversation",
     },
   },
+  getConversationList: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "message/conversation",
+    },
+  },
   getSingleUser: {
     v1: {
       ...defaults.methods.GET,

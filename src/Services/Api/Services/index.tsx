@@ -23,6 +23,12 @@ export const createConversation = ({ body }: any) =>
     body,
   });
 
+export const getConversationList = ({ query }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.getConversationList.v1,
+    query,
+  });
+
 export const getSingleUser = ({ query }: any) =>
   callApi({
     uriEndPoint: authEndpoints.getSingleUser.v1,
