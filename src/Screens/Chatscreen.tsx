@@ -22,6 +22,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import defaultImage from "../images/avatar1.png";
 import { toast } from "react-toastify";
 import defaultBackImage from "../images/defaultback.png";
+import Groupmodal from "./Components/Groupmodal";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
@@ -35,6 +36,7 @@ function Chatscreen() {
   const [conversationResult, setConversationResult]: any = useState([]);
   const [messageListResult, setMessageListResult]: any = useState([]);
   const [startMessageValue, setStartMessageValue]: any = useState(0);
+  const [groupPopupFlag, setGroupPopupFlag]: any = useState(false);
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -193,6 +195,9 @@ function Chatscreen() {
 
   return (
     <>
+      {groupPopupFlag &&
+        <Groupmodal />
+      }
       <div className="container-fluid">
         <div className="row clearfix">
           <div className="col-lg-12">
@@ -393,14 +398,6 @@ function Chatscreen() {
                 </div>
                 <div className="chat-message clearfix">
                   <div className="input-group mb-0">
-                    <div
-                      onClick={sendMessageHandler}
-                      className="input-group-prepend"
-                    >
-                      <span className="input-group-text">
-                        <i className="fa-solid fa-paper-plane"></i>
-                      </span>
-                    </div>
                     <input
                       type="text"
                       className="form-control"
@@ -410,6 +407,14 @@ function Chatscreen() {
                         setMessageInput(event.target.value)
                       }
                     />
+                    <div
+                      onClick={sendMessageHandler}
+                      className="input-group-prepend"
+                    >
+                      <span className="input-group-text">
+                        <i className="fa-solid fa-paper-plane"></i>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
