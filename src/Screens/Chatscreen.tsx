@@ -39,6 +39,7 @@ function Chatscreen() {
   const [groupPopupFlag, setGroupPopupFlag]: any = useState(false);
   const chatListRef: any = useRef(null);
   const [totalCountMessage, setTotalCountMessage]: any = useState(0);
+  const [scrollManager, setScrollManager]: any = useState(0);
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -68,6 +69,9 @@ function Chatscreen() {
   // get message listing
   useEffect(() => {
     setMessageListResult([]);
+    setTotalCountMessage(0);
+    setScrollManager(0);
+    setStartMessageValue(0);
   }, [conversationID]);
 
   const getMessageListRecord = (conversation: any) => {
@@ -75,16 +79,19 @@ function Chatscreen() {
       query: {
         conversationId: conversation,
         _start: startMessageValue,
-        _limit: 10,
+        _limit: 50,
       },
     })
       .then((res: any) => {
-        console.log("startMessageValue", startMessageValue);
         setTotalCountMessage(res?.data?.total_count);
         if (res.data.messages && res.data.messages.length > 0) {
           setMessageListResult((oldValue: any) => {
             return [...res.data.messages.reverse(), ...oldValue];
           });
+          setTimeout(() => {
+            chatListRef.current.scrollTop =
+              chatListRef.current.scrollHeight - scrollManager;
+          }, 100);
         }
       })
       .catch((err: any) => console.log("err", err));
@@ -166,22 +173,22 @@ function Chatscreen() {
   };
 
   // handle scroll
-  let firstTime = true;
   useEffect(() => {
-    if (chatListRef.current && firstTime) {
+    if (chatListRef.current) {
       const scrollHeight = chatListRef.current.scrollHeight;
       chatListRef.current.scrollTop = scrollHeight;
-      firstTime = false;
     }
   }, [chatListRef.current]);
 
   const handleScrollTop = () => {
+    setScrollManager(chatListRef.current.scrollHeight);
     if (chatListRef.current.scrollTop === 0) {
       setStartMessageValue((oldValue: any) =>
-        totalCountMessage + 10 > oldValue ? oldValue + 10 : oldValue
+        totalCountMessage + 50 > oldValue ? oldValue + 50 : oldValue
       );
     }
   };
+
   //-----------------------------
 
   const receiveMessageHandler = (data: any) => {
@@ -210,6 +217,9 @@ function Chatscreen() {
   useEffect(() => {
     let interval: any;
     receiveMessage(receiveMessageHandler);
+    setTotalCountMessage(0);
+    setScrollManager(0);
+    setStartMessageValue(0);
     setMessageListResult([]);
     const userDetails: any = sessionStorage.getItem("userData");
     const myUserId = JSON.parse(userDetails)._id;
