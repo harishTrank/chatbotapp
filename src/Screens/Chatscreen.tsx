@@ -107,7 +107,6 @@ function Chatscreen() {
     userId: any,
     conversation: any = undefined
   ) => {
-    console.log("first", userId, conversation);
     setMessageListResult([]);
     setTotalCountMessage(0);
     setScrollManager(0);
@@ -150,10 +149,6 @@ function Chatscreen() {
     }
   };
 
-  useEffect(
-    () => console.log("conversationID", conversationID),
-    [conversationID]
-  );
   const logoutBtnHandler = () => {
     sessionStorage.removeItem("userData");
     sessionStorage.removeItem("accessToken");
@@ -198,15 +193,25 @@ function Chatscreen() {
     }, 500);
   };
 
+  const handleEnterPress = (event: any) => {
+    if (event.key === "Enter") {
+      sendMessageHandler();
+    }
+  };
+
   // handle scroll
   useEffect(() => {
+    setTotalCountMessage(0);
+    setScrollManager(0);
+    setStartMessageValue(0);
+    setMessageListResult([]);
     if (chatListRef.current) {
-      const scrollHeight = chatListRef.current.scrollHeight;
-      if (chatListRef?.current?.scrollTop) {
+      setTimeout(() => {
+        const scrollHeight = chatListRef.current.scrollHeight;
         chatListRef.current.scrollTop = scrollHeight;
-      }
+      }, 200);
     }
-  }, [chatListRef.current]);
+  }, [chatListRef.current, conversationID?._id]);
 
   const handleScrollTop = () => {
     setScrollManager(chatListRef.current.scrollHeight);
@@ -522,6 +527,7 @@ function Chatscreen() {
                           className="form-control"
                           placeholder="Enter text here..."
                           value={messageInput}
+                          onKeyDown={handleEnterPress}
                           onChange={(event: any) =>
                             setMessageInput(event.target.value)
                           }
