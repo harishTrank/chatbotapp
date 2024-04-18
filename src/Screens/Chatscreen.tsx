@@ -32,7 +32,7 @@ function Chatscreen() {
   const [myUserId, setMyUserId]: any = useState("");
   const [getCurrentUserData, setCurrentUserData]: any = useState({});
   const [messageInput, setMessageInput]: any = useState("");
-  const [conversationID, setConversationID]: any = useState("");
+  const [conversationID, setConversationID]: any = useState({});
   const [conversationResult, setConversationResult]: any = useState([]);
   const [messageListResult, setMessageListResult]: any = useState([]);
   const [startMessageValue, setStartMessageValue]: any = useState(0);
@@ -72,7 +72,7 @@ function Chatscreen() {
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
-  }, [conversationID]);
+  }, [conversationID?._id]);
 
   const getMessageListRecord = (conversation: any) => {
     messageList({
@@ -89,8 +89,10 @@ function Chatscreen() {
             return [...res.data.messages.reverse(), ...oldValue];
           });
           setTimeout(() => {
-            chatListRef.current.scrollTop =
-              chatListRef.current.scrollHeight - scrollManager;
+            if (chatListRef?.current?.scrollTop) {
+              chatListRef.current.scrollTop =
+                chatListRef.current?.scrollHeight || 0 - scrollManager;
+            }
           }, 100);
         }
       })
@@ -98,43 +100,60 @@ function Chatscreen() {
   };
 
   useEffect(() => {
-    getMessageListRecord(conversationID);
+    getMessageListRecord(conversationID?._id);
   }, [startMessageValue]);
 
-  const searchUserClickHandler = (userId: any) => {
+  const searchUserClickHandler = (
+    userId: any,
+    conversation: any = undefined
+  ) => {
+    console.log("first", userId, conversation);
     setMessageListResult([]);
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
-    createConversation({
-      body: {
-        usersList: [myUserId, userId],
-      },
-    })
-      .then((res: any) => {
-        joinConversation({
-          userId: myUserId,
-          conversationId: res.data._id,
-        });
-        setConversationID(res.data._id);
-        getMessageListRecord(res.data._id);
-        getSingleUser({
-          query: {
-            userId,
-          },
-        })
-          .then((res: any) => {
-            setCurrentUserData(res.response);
-            setSearchText("");
-            setSearchFlag(false);
-          })
-          .catch((err) => console.log("err", err));
-      })
-      .catch((err) => {
-        console.log("err", err);
+    if (conversation?._id && conversation?.type?.toLowerCase() === "group") {
+      joinConversation({
+        userId: myUserId,
+        conversationId: conversation?._id,
       });
+      setConversationID(conversation);
+      getMessageListRecord(conversation?._id);
+    } else {
+      createConversation({
+        body: {
+          usersList: [myUserId, userId],
+        },
+      })
+        .then((res: any) => {
+          joinConversation({
+            userId: myUserId,
+            conversationId: res.data._id,
+          });
+          setConversationID(res.data);
+          getMessageListRecord(res.data._id);
+          getSingleUser({
+            query: {
+              userId,
+            },
+          })
+            .then((res: any) => {
+              setCurrentUserData(res.response);
+              setSearchText("");
+              setSearchFlag(false);
+            })
+            .catch((err) => console.log("err", err));
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    }
   };
 
+  useEffect(
+    () => console.log("conversationID", conversationID),
+    [conversationID]
+  );
   const logoutBtnHandler = () => {
     sessionStorage.removeItem("userData");
     sessionStorage.removeItem("accessToken");
@@ -149,16 +168,19 @@ function Chatscreen() {
     }
     sendMessage({
       senderId: myUserId,
-      receiverId: getCurrentUserData._id,
+      receiverId:
+        conversationID?.type?.toLowerCase() === "group"
+          ? conversationID?.members
+          : getCurrentUserData._id,
       type: "text",
-      conversationId: conversationID,
+      conversationId: conversationID?._id,
       message: messageInput,
     });
     setMessageInput("");
     setTimeout(() => {
       latestMessageList({
         query: {
-          conversationId: conversationID,
+          conversationId: conversationID?._id,
         },
       })
         .then((res: any) => {
@@ -180,13 +202,15 @@ function Chatscreen() {
   useEffect(() => {
     if (chatListRef.current) {
       const scrollHeight = chatListRef.current.scrollHeight;
-      chatListRef.current.scrollTop = scrollHeight;
+      if (chatListRef?.current?.scrollTop) {
+        chatListRef.current.scrollTop = scrollHeight;
+      }
     }
   }, [chatListRef.current]);
 
   const handleScrollTop = () => {
     setScrollManager(chatListRef.current.scrollHeight);
-    if (chatListRef.current.scrollTop === 0) {
+    if (chatListRef.current?.scrollTop === 0) {
       setStartMessageValue((oldValue: any) =>
         totalCountMessage + 50 > oldValue ? oldValue + 50 : oldValue
       );
@@ -199,7 +223,7 @@ function Chatscreen() {
     setTimeout(() => {
       latestMessageList({
         query: {
-          conversationId: conversationID,
+          conversationId: conversationID?._id,
           messageId: data?.latestMessageId,
         },
       })
@@ -318,31 +342,45 @@ function Chatscreen() {
                         <li
                           key={record?._id}
                           className={`clearfix ${
-                            getCurrentUserData?._id === getOtherUser?._id &&
-                            "active"
+                            record?._id === conversationID?._id && "active"
                           }`}
                           onClick={() =>
-                            searchUserClickHandler(getOtherUser?._id)
+                            searchUserClickHandler(getOtherUser?._id, record)
                           }
                         >
-                          <img src={defaultImage} alt="avatar" />
+                          <img
+                            src={
+                              record.type === "single"
+                                ? getOtherUser?.avatar_url || defaultImage
+                                : record.avatar_url || defaultImage
+                            }
+                            alt="avatar"
+                          />
                           <div className="about">
-                            <div className="name">{getOtherUser?.name}</div>
-                            <div className="status">
-                              {" "}
-                              <i
-                                className={`fa fa-circle ${
-                                  getOtherUser?.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                }`}
-                              ></i>{" "}
-                              {getOtherUser?.status === "online"
-                                ? "online"
-                                : `Last seen: ${dayjs(
-                                    getOtherUser?.updated_at
-                                  ).fromNow()}`}
+                            <div className="name">
+                              {record.type === "single"
+                                ? getOtherUser?.name
+                                : record.name}
                             </div>
+                            {record.type === "single" ? (
+                              <div className="status">
+                                {" "}
+                                <i
+                                  className={`fa fa-circle ${
+                                    getOtherUser?.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                  }`}
+                                ></i>{" "}
+                                {getOtherUser?.status === "online"
+                                  ? "online"
+                                  : `Last seen: ${dayjs(
+                                      getOtherUser?.updated_at
+                                    ).fromNow()}`}
+                              </div>
+                            ) : (
+                              <div className="status">Group Chat</div>
+                            )}
                           </div>
                         </li>
                       );
@@ -353,7 +391,7 @@ function Chatscreen() {
                 <div className="chat-header clearfix">
                   <div className="row">
                     <div className="col-lg-6">
-                      {getCurrentUserData?._id && (
+                      {conversationID?._id && (
                         <>
                           <a
                             href="#"
@@ -362,9 +400,10 @@ function Chatscreen() {
                           >
                             <img
                               src={
-                                getCurrentUserData?.avatar_url
-                                  ? getCurrentUserData?.avatar_url
-                                  : defaultImage
+                                conversationID.type === "single"
+                                  ? getCurrentUserData?.avatar_url ||
+                                    defaultImage
+                                  : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
                             />
@@ -372,15 +411,19 @@ function Chatscreen() {
 
                           <div className="chat-about">
                             <h6 className="m-b-0">
-                              {getCurrentUserData?.name}
+                              {conversationID?.type === "single"
+                                ? getCurrentUserData?.name
+                                : conversationID?.name}
                             </h6>
                             <small>
-                              {getCurrentUserData?.status?.toLowerCase() ===
-                              "online"
-                                ? getCurrentUserData?.status
-                                : `Last seen: ${dayjs(
-                                    getCurrentUserData?.updated_at
-                                  ).fromNow()}`}
+                              {conversationID?.type === "single"
+                                ? getCurrentUserData?.status?.toLowerCase() ===
+                                  "online"
+                                  ? getCurrentUserData?.status
+                                  : `Last seen: ${dayjs(
+                                      getCurrentUserData?.updated_at
+                                    ).fromNow()}`
+                                : "Group Chat"}
                             </small>
                           </div>
                         </>
@@ -418,7 +461,7 @@ function Chatscreen() {
                     </div>
                   </div>
                 </div>
-                {getCurrentUserData?._id ? (
+                {conversationID?._id ? (
                   <>
                     <div
                       onScroll={handleScrollTop}
@@ -437,9 +480,17 @@ function Chatscreen() {
                                   }`}
                                 >
                                   <span className="message-data-time">
-                                    {dayjs(record?.created_at).format(
+                                    {`${dayjs(record?.created_at).format(
                                       "hh:mm A"
-                                    )}
+                                    )} ${
+                                      conversationID?.type === "group"
+                                        ? `(${
+                                            record?.sender?._id !== myUserId
+                                              ? record?.sender?.name
+                                              : "You"
+                                          })`
+                                        : ""
+                                    }`}
                                   </span>
                                 </div>
                                 <div

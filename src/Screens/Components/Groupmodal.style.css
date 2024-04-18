@@ -30,17 +30,81 @@
 }
 
 .group-body {
-    margin-top: 40px;
-    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
 }
 
 .group-body input {
-    width: 100%;
+    width: calc(100% - 50px);
     outline: none;
     border: none;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #ced4da;
     padding: 5px;
+}
+
+.group-body .input-group input {
+    border: 1px solid #ced4da;
+}
+
+.group-heading h3 {
+    font-size: 20px;
+}
+
+.group-body label {
+    cursor: pointer;
+    background: #ececec;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.group-body .icon {
+    font-size: 20px;
+    color: #495057;
+}
+
+#f {
+    display: none;
+}
+
+.added-users {
+    margin-top: 10px;
+}
+
+.added-users ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.added-users ul li {
+    list-style: none;
+    font-size: 12px;
+    background: #e7e7e7;
+    padding: 5px;
+    border-radius: 4px;
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.added-users ul li i {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.create-btn {
+    text-align: right;
 }

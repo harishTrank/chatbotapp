@@ -58,12 +58,12 @@
     border-radius: 50%
 }
 
-.people-list .about {
+.about {
     float: left;
     padding-left: 5px
 }
 
-.people-list .status {
+.status {
     color: #999;
     font-size: 11px
 }
@@ -86,6 +86,7 @@
 
 .chat .chat-history {
     padding: 20px;
+    height: 500px;
     border-bottom: 2px solid #fff;
     overflow: auto;
 }
@@ -124,7 +125,8 @@
     font-size: 14px;
     border-radius: 7px;
     display: inline-block;
-    position: relative
+    position: relative;
+    max-width: 85%;
 }
 
 /* .chat .chat-history .message:after {
@@ -203,7 +205,7 @@
     font-size: 0;
     content: " ";
     clear: both;
-    height: 0
+    height: 0;
 }
 
 .all-users {
@@ -235,6 +237,11 @@
 
 .chat-about h6 {
     margin-bottom: 0;
+}
+
+.all-users .clearfix img {
+    float: left;
+    border-radius: 50%
 }
 
 @media only screen and (max-width: 767px) {
