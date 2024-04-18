@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./Chatscreen.style.css";
 import {
   createConversation,
@@ -37,6 +37,8 @@ function Chatscreen() {
   const [messageListResult, setMessageListResult]: any = useState([]);
   const [startMessageValue, setStartMessageValue]: any = useState(0);
   const [groupPopupFlag, setGroupPopupFlag]: any = useState(false);
+  const chatListRef: any = useRef(null);
+  const [totalCountMessage, setTotalCountMessage]: any = useState(0);
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -73,16 +75,24 @@ function Chatscreen() {
       query: {
         conversationId: conversation,
         _start: startMessageValue,
-        _limit: 50,
+        _limit: 10,
       },
     })
       .then((res: any) => {
-        setMessageListResult((oldValue: any) => {
-          return [...res.data.messages.reverse(), ...oldValue];
-        });
+        console.log("startMessageValue", startMessageValue);
+        setTotalCountMessage(res?.data?.total_count);
+        if (res.data.messages && res.data.messages.length > 0) {
+          setMessageListResult((oldValue: any) => {
+            return [...res.data.messages.reverse(), ...oldValue];
+          });
+        }
       })
       .catch((err: any) => console.log("err", err));
   };
+
+  useEffect(() => {
+    getMessageListRecord(conversationID);
+  }, [startMessageValue]);
 
   const searchUserClickHandler = (userId: any) => {
     createConversation({
@@ -144,10 +154,35 @@ function Chatscreen() {
           setMessageListResult((oldValue: any) => {
             return [...oldValue, res.data];
           });
+          setTimeout(() => {
+            chatListRef.current.scrollTo({
+              top: chatListRef.current.scrollHeight,
+              behavior: "smooth",
+            });
+          }, 100);
         })
         .catch((err: any) => console.log("err", err));
     }, 500);
   };
+
+  // handle scroll
+  let firstTime = true;
+  useEffect(() => {
+    if (chatListRef.current && firstTime) {
+      const scrollHeight = chatListRef.current.scrollHeight;
+      chatListRef.current.scrollTop = scrollHeight;
+      firstTime = false;
+    }
+  }, [chatListRef.current]);
+
+  const handleScrollTop = () => {
+    if (chatListRef.current.scrollTop === 0) {
+      setStartMessageValue((oldValue: any) =>
+        totalCountMessage + 10 > oldValue ? oldValue + 10 : oldValue
+      );
+    }
+  };
+  //-----------------------------
 
   const receiveMessageHandler = (data: any) => {
     setTimeout(() => {
@@ -161,6 +196,12 @@ function Chatscreen() {
           setMessageListResult((oldValue: any) => {
             return [...oldValue, res.data];
           });
+          setTimeout(() => {
+            chatListRef.current.scrollTo({
+              top: chatListRef.current.scrollHeight,
+              behavior: "smooth",
+            });
+          }, 100);
         })
         .catch((err: any) => console.log("err", err));
     }, 500);
@@ -195,12 +236,7 @@ function Chatscreen() {
 
   return (
     <>
-      {
-        groupPopupFlag &&
-        <Groupmodal setGroupPopupFlag={
-          setGroupPopupFlag
-        } />
-      }
+      {groupPopupFlag && <Groupmodal setGroupPopupFlag={setGroupPopupFlag} />}
       <div className="container-fluid">
         <div className="row clearfix">
           <div className="col-lg-12">
@@ -234,10 +270,11 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${item.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                      }`}
+                                    className={`fa fa-circle ${
+                                      item.status === "online"
+                                        ? "online"
+                                        : "offline"
+                                    }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -260,15 +297,16 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                            (item: any) => item._id !== myUserId
-                          );
+                              (item: any) => item._id !== myUserId
+                            );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${getCurrentUserData?._id === getOtherUser?._id &&
+                          className={`clearfix ${
+                            getCurrentUserData?._id === getOtherUser?._id &&
                             "active"
-                            }`}
+                          }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id)
                           }
@@ -279,16 +317,17 @@ function Chatscreen() {
                             <div className="status">
                               {" "}
                               <i
-                                className={`fa fa-circle ${getOtherUser?.status === "online"
-                                  ? "online"
-                                  : "offline"
-                                  }`}
+                                className={`fa fa-circle ${
+                                  getOtherUser?.status === "online"
+                                    ? "online"
+                                    : "offline"
+                                }`}
                               ></i>{" "}
                               {getOtherUser?.status === "online"
                                 ? "online"
                                 : `Last seen: ${dayjs(
-                                  getOtherUser?.updated_at
-                                ).fromNow()}`}
+                                    getOtherUser?.updated_at
+                                  ).fromNow()}`}
                             </div>
                           </div>
                         </li>
@@ -323,11 +362,11 @@ function Chatscreen() {
                             </h6>
                             <small>
                               {getCurrentUserData?.status?.toLowerCase() ===
-                                "online"
+                              "online"
                                 ? getCurrentUserData?.status
                                 : `Last seen: ${dayjs(
-                                  getCurrentUserData?.updated_at
-                                ).fromNow()}`}
+                                    getCurrentUserData?.updated_at
+                                  ).fromNow()}`}
                             </small>
                           </div>
                         </>
@@ -342,9 +381,10 @@ function Chatscreen() {
                           >
                             <i className="fa fa-file"></i>
                           </a>
-                          <div onClick={() =>
-                            setGroupPopupFlag(!groupPopupFlag)
-                          } className="btn btn-outline-primary mr-2">
+                          <div
+                            onClick={() => setGroupPopupFlag(!groupPopupFlag)}
+                            className="btn btn-outline-primary mr-2"
+                          >
                             <i className="fa fa-user-group"></i>
                           </div>
                           <a href="#" className="btn btn-outline-primary mr-2">
@@ -366,7 +406,11 @@ function Chatscreen() {
                 </div>
                 {getCurrentUserData?._id ? (
                   <>
-                    <div className="chat-history">
+                    <div
+                      onScroll={handleScrollTop}
+                      ref={chatListRef}
+                      className="chat-history"
+                    >
                       <ul className="m-b-0">
                         {messageListResult &&
                           messageListResult?.map((record: any) => {
@@ -374,21 +418,22 @@ function Chatscreen() {
                             return (
                               <li key={record?._id} className="clearfix">
                                 <div
-                                  className={`message-data ${myMessage && "text-right"
-                                    }`}
+                                  className={`message-data ${
+                                    myMessage && "text-right"
+                                  }`}
                                 >
                                   <span className="message-data-time">
                                     {dayjs(record?.created_at).format(
                                       "hh:mm A"
                                     )}
                                   </span>
-
                                 </div>
                                 <div
-                                  className={`message ${myMessage
-                                    ? "other-message float-right"
-                                    : "my-message"
-                                    }`}
+                                  className={`message ${
+                                    myMessage
+                                      ? "other-message float-right"
+                                      : "my-message"
+                                  }`}
                                 >
                                   {record?.message}
                                 </div>
