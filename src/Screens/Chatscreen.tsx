@@ -163,7 +163,7 @@ function Chatscreen() {
     }
     sendMessage({
       senderId: myUserId,
-      receiverId:
+      receiverIds:
         conversationID?.type?.toLowerCase() === "group"
           ? conversationID?.members
           : getCurrentUserData._id,
