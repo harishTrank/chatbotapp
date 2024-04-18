@@ -17,7 +17,7 @@ const joinConversation = (callback: any) => {
 };
 
 const leaveConversation = (callback: any) => {
-  socket.on("leave", callback);
+  socket.emit("leave", callback);
 };
 
 const sendMessage = (callback: any) => {

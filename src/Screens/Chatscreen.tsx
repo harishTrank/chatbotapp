@@ -72,6 +72,11 @@ function Chatscreen() {
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
+    // if (myUserId && conversationID?._id) {
+    //   leaveConversation({
+    //     userId: myUserId,
+    //   });
+    // }
   }, [conversationID?._id]);
 
   const getMessageListRecord = (conversation: any) => {
@@ -111,6 +116,9 @@ function Chatscreen() {
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
+    leaveConversation({
+      userId: myUserId,
+    });
     if (conversation?._id && conversation?.type?.toLowerCase() === "group") {
       joinConversation({
         userId: myUserId,
