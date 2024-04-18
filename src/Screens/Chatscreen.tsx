@@ -72,11 +72,6 @@ function Chatscreen() {
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
-    // if (myUserId && conversationID?._id) {
-    //   leaveConversation({
-    //     userId: myUserId,
-    //   });
-    // }
   }, [conversationID?._id]);
 
   const getMessageListRecord = (conversation: any) => {
