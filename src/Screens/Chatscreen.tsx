@@ -102,6 +102,10 @@ function Chatscreen() {
   }, [startMessageValue]);
 
   const searchUserClickHandler = (userId: any) => {
+    setMessageListResult([]);
+    setTotalCountMessage(0);
+    setScrollManager(0);
+    setStartMessageValue(0);
     createConversation({
       body: {
         usersList: [myUserId, userId],
