@@ -438,12 +438,6 @@ function Chatscreen() {
                           >
                             <i className="fa fa-file"></i>
                           </a>
-                          <div
-                            onClick={() => setGroupPopupFlag(!groupPopupFlag)}
-                            className="btn btn-outline-primary mr-2"
-                          >
-                            <i className="fa fa-user-group"></i>
-                          </div>
                           <a href="#" className="btn btn-outline-primary mr-2">
                             <i className="fa fa-image"></i>
                           </a>
@@ -452,6 +446,12 @@ function Chatscreen() {
                           </a>
                         </>
                       )}
+                      <div
+                        onClick={() => setGroupPopupFlag(!groupPopupFlag)}
+                        className="btn btn-outline-primary mr-2"
+                      >
+                        <i className="fa fa-user-group"></i>
+                      </div>
                       <div
                         onClick={logoutBtnHandler}
                         className="btn btn-outline-danger"
