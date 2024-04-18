@@ -9,7 +9,7 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
   const [searchFlag, setSearchFlag] = useState(false);
   const [userList, setUserList]: any = useState([]);
   const [groupList, setGroupList]: any = useState([]);
-  const [groupName, setGroupName]: any = useState("");
+  const [groupName, setGroupName]: any = useState(undefined);
 
   useEffect(() => {
     const userData: any = sessionStorage.getItem("userData");
@@ -58,24 +58,31 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
         return oldvalue.filter((item: any) => item._id !== userId);
       });
     } else {
-      toast.error("You cann't remove yourself.");
+      toast.error("You cannot remove yourself.");
     }
   };
 
   const createGroupHandler = () => {
-    createGroupApi({
-      body: {
-        members: groupList.map((item: any) => item._id),
-        type: "group",
-        name: groupName,
-      },
-    })
-      .then((res: any) => {
-        console.log("res", res);
+    if (!groupName) {
+      toast.error("Please enter the group name.");
+    } else if (groupList && groupList?.length !== 1) {
+      createGroupApi({
+        body: {
+          members: groupList.map((item: any) => item._id),
+          type: "group",
+          name: groupName,
+        },
       })
-      .catch((err: any) => {
-        console.log("err", err);
-      });
+        .then((res: any) => {
+          setGroupPopupFlag(false);
+          toast.success("Group created successfully.");
+        })
+        .catch((err: any) => {
+          console.log("err", err);
+        });
+    } else {
+      toast.error("Add atleast one member.");
+    }
   };
 
   return (
