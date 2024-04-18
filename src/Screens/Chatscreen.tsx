@@ -270,11 +270,10 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${
-                                      item.status === "online"
+                                    className={`fa fa-circle ${item.status === "online"
                                         ? "online"
                                         : "offline"
-                                    }`}
+                                      }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -297,38 +296,41 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                              (item: any) => item._id !== myUserId
-                            );
+                            (item: any) => item._id !== myUserId
+                          );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${
-                            getCurrentUserData?._id === getOtherUser?._id &&
+                          className={`clearfix ${getCurrentUserData?._id === getOtherUser?._id &&
                             "active"
-                          }`}
+                            }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id)
                           }
                         >
-                          <img src={defaultImage} alt="avatar" />
+                          <img src={record.type === "single" ? getOtherUser?.avatar_url || defaultImage : record.avatar_url || defaultImage} alt="avatar" />
                           <div className="about">
-                            <div className="name">{getOtherUser?.name}</div>
-                            <div className="status">
-                              {" "}
-                              <i
-                                className={`fa fa-circle ${
-                                  getOtherUser?.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                }`}
-                              ></i>{" "}
-                              {getOtherUser?.status === "online"
-                                ? "online"
-                                : `Last seen: ${dayjs(
+                            <div className="name">{record.type === "single" ? getOtherUser?.name : record.name}</div>
+                            {record.type === "single" ?
+                              <div className="status">
+                                {" "}
+                                <i
+                                  className={`fa fa-circle ${getOtherUser?.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                    }`}
+                                ></i>{" "}
+                                {getOtherUser?.status === "online"
+                                  ? "online"
+                                  : `Last seen: ${dayjs(
                                     getOtherUser?.updated_at
                                   ).fromNow()}`}
-                            </div>
+                              </div> :
+                              <div className="status">
+                                Group Chat
+                              </div>
+                            }
                           </div>
                         </li>
                       );
@@ -362,11 +364,11 @@ function Chatscreen() {
                             </h6>
                             <small>
                               {getCurrentUserData?.status?.toLowerCase() ===
-                              "online"
+                                "online"
                                 ? getCurrentUserData?.status
                                 : `Last seen: ${dayjs(
-                                    getCurrentUserData?.updated_at
-                                  ).fromNow()}`}
+                                  getCurrentUserData?.updated_at
+                                ).fromNow()}`}
                             </small>
                           </div>
                         </>
@@ -418,9 +420,8 @@ function Chatscreen() {
                             return (
                               <li key={record?._id} className="clearfix">
                                 <div
-                                  className={`message-data ${
-                                    myMessage && "text-right"
-                                  }`}
+                                  className={`message-data ${myMessage && "text-right"
+                                    }`}
                                 >
                                   <span className="message-data-time">
                                     {dayjs(record?.created_at).format(
@@ -429,11 +430,10 @@ function Chatscreen() {
                                   </span>
                                 </div>
                                 <div
-                                  className={`message ${
-                                    myMessage
+                                  className={`message ${myMessage
                                       ? "other-message float-right"
                                       : "my-message"
-                                  }`}
+                                    }`}
                                 >
                                   {record?.message}
                                 </div>

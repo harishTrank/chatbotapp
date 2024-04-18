@@ -46,3 +46,8 @@ export const latestMessageList = ({ query }: any) =>
     uriEndPoint: authEndpoints.latestMessageList.v1,
     query,
   });
+export const createGroupApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.createGroupApi.v1,
+    body,
+  });
