@@ -277,7 +277,7 @@ function Chatscreen() {
       conversationListRecordHit({
         userId: myUserId,
       });
-    }, 1000);
+    }, 1500);
     conversationListRecordGet((data: any) => {
       setConversationResult(data);
     });
