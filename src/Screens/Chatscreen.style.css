@@ -11,7 +11,7 @@
 
 .chat-app .people-list {
     width: 280px;
-    padding: 20px;
+    padding: 10px;
     border-right: 1px solid #eaeaea;
     overflow: auto;
 }
