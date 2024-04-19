@@ -108,11 +108,11 @@ function Chatscreen() {
     }
   }, [conversationID?._id]);
 
-  const getMessageListRecord = (conversation: any) => {
+  const getMessageListRecord = (conversation: any, value: any) => {
     messageList({
       query: {
         conversationId: conversation,
-        _start: startMessageValue,
+        _start: value,
         _limit: 50,
       },
     })
@@ -135,7 +135,7 @@ function Chatscreen() {
 
   useEffect(() => {
     if (startMessageValue !== 0) {
-      getMessageListRecord(conversationID?._id);
+      getMessageListRecord(conversationID?._id, startMessageValue);
     }
   }, [startMessageValue]);
 
@@ -170,7 +170,7 @@ function Chatscreen() {
         conversationId: conversation?._id,
       });
       setConversationID(conversation);
-      getMessageListRecord(conversation?._id);
+      getMessageListRecord(conversation?._id, 0);
     } else {
       createConversation({
         body: {
@@ -183,7 +183,7 @@ function Chatscreen() {
             conversationId: res.data._id,
           });
           setConversationID(res.data);
-          getMessageListRecord(res.data._id);
+          getMessageListRecord(res.data._id, 0);
           getSingleUser({
             query: {
               userId,
@@ -257,10 +257,6 @@ function Chatscreen() {
 
   // handle scroll
   useEffect(() => {
-    setTotalCountMessage(0);
-    setScrollManager(0);
-    setStartMessageValue(0);
-    setMessageListResult([]);
     if (chatListRef.current) {
       setTimeout(() => {
         if (chatListRef?.current?.scrollHeight) {
