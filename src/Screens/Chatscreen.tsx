@@ -78,7 +78,6 @@ function Chatscreen() {
           },
         })
           .then((res: any) => {
-            console.log("conversationID?._id", conversationID?._id);
             setMessageListResult((oldValue: any) => {
               return [
                 ...oldValue.filter((item: any) => item._id !== res.data?._id),
@@ -144,11 +143,26 @@ function Chatscreen() {
     userId: any,
     conversation: any = undefined
   ) => {
+    let interval: any;
+    receiveMessageOff();
+    const userDetails: any = sessionStorage.getItem("userData");
+    const myUserId = JSON.parse(userDetails)._id;
+    clearInterval(interval);
+    setMessageListResult([]);
+    setMyUserId(myUserId);
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
     leaveConversation({
       userId: myUserId,
+    });
+    interval = setInterval(() => {
+      conversationListRecordHit({
+        userId: myUserId,
+      });
+    }, 1500);
+    conversationListRecordGet((data: any) => {
+      setConversationResult(data);
     });
     if (conversation?._id && conversation?.type?.toLowerCase() === "group") {
       joinConversation({
@@ -175,8 +189,8 @@ function Chatscreen() {
               userId,
             },
           })
-            .then((res: any) => {
-              setCurrentUserData(res.response);
+            .then((res1: any) => {
+              setCurrentUserData(res1.response);
               setSearchText("");
               setSearchFlag(false);
             })
