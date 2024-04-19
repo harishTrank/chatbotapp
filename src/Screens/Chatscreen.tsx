@@ -67,11 +67,45 @@ function Chatscreen() {
   }, [searchText]);
 
   // get message listing
+
+  const receiveMessageHandler = (data: any) => {
+    if (conversationID?._id) {
+      setTimeout(() => {
+        latestMessageList({
+          query: {
+            conversationId: conversationID?._id,
+            // messageId: data?.latestMessageId,
+          },
+        })
+          .then((res: any) => {
+            console.log("conversationID?._id", conversationID?._id);
+            setMessageListResult((oldValue: any) => {
+              return [
+                ...oldValue.filter((item: any) => item._id !== res.data?._id),
+                res.data,
+              ];
+            });
+            setTimeout(() => {
+              chatListRef.current.scrollTo({
+                top: chatListRef.current.scrollHeight,
+                behavior: "smooth",
+              });
+            }, 100);
+          })
+          .catch((err: any) => console.log("err", err));
+      }, 500);
+    }
+  };
+
   useEffect(() => {
     setMessageListResult([]);
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
+    if (conversationID?._id) {
+      receiveMessageOff();
+      receiveMessage(receiveMessageHandler);
+    }
   }, [conversationID?._id]);
 
   const getMessageListRecord = (conversation: any) => {
@@ -183,7 +217,10 @@ function Chatscreen() {
       })
         .then((res: any) => {
           setMessageListResult((oldValue: any) => {
-            return [...oldValue, res.data];
+            return [
+              ...oldValue.filter((item: any) => item._id !== res.data?._id),
+              res.data,
+            ];
           });
           setTimeout(() => {
             chatListRef.current.scrollTo({
@@ -227,32 +264,8 @@ function Chatscreen() {
 
   //-----------------------------
 
-  const receiveMessageHandler = (data: any) => {
-    setTimeout(() => {
-      latestMessageList({
-        query: {
-          conversationId: conversationID?._id,
-          messageId: data?.latestMessageId,
-        },
-      })
-        .then((res: any) => {
-          setMessageListResult((oldValue: any) => {
-            return [...oldValue, res.data];
-          });
-          setTimeout(() => {
-            chatListRef.current.scrollTo({
-              top: chatListRef.current.scrollHeight,
-              behavior: "smooth",
-            });
-          }, 100);
-        })
-        .catch((err: any) => console.log("err", err));
-    }, 500);
-  };
-
   useEffect(() => {
     let interval: any;
-    receiveMessage(receiveMessageHandler);
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
