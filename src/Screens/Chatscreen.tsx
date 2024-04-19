@@ -329,11 +329,10 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${
-                                      item.status === "online"
-                                        ? "online"
-                                        : "offline"
-                                    }`}
+                                    className={`fa fa-circle ${item.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                      }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -356,15 +355,14 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                              (item: any) => item._id !== myUserId
-                            );
+                            (item: any) => item._id !== myUserId
+                          );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${
-                            record?._id === conversationID?._id && "active"
-                          }`}
+                          className={`clearfix ${record?._id === conversationID?._id && "active"
+                            }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id, record)
                           }
@@ -387,22 +385,29 @@ function Chatscreen() {
                               <div className="status">
                                 {" "}
                                 <i
-                                  className={`fa fa-circle ${
-                                    getOtherUser?.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                  }`}
+                                  className={`fa fa-circle ${getOtherUser?.status === "online"
+                                    ? "online"
+                                    : "offline"
+                                    }`}
                                 ></i>{" "}
                                 {getOtherUser?.status === "online"
                                   ? "online"
                                   : `Last seen: ${dayjs(
-                                      getOtherUser?.updated_at
-                                    ).fromNow()}`}
+                                    getOtherUser?.updated_at
+                                  ).fromNow()}`}
                               </div>
                             ) : (
                               <div className="status">Group Chat</div>
                             )}
                           </div>
+                          {
+                            record?.unread_count?.[0]?.total_count &&
+                            <div className="msg-count">
+                              {
+                                record?.unread_count?.[0]?.total_count > 99 ? "99+" : record?.unread_count?.[0]?.total_count
+                              }
+                            </div>
+                          }
                         </li>
                       );
                     })}
@@ -423,7 +428,7 @@ function Chatscreen() {
                               src={
                                 conversationID.type === "single"
                                   ? getCurrentUserData?.avatar_url ||
-                                    defaultImage
+                                  defaultImage
                                   : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
@@ -442,8 +447,8 @@ function Chatscreen() {
                                   "online"
                                   ? getCurrentUserData?.status
                                   : `Last seen: ${dayjs(
-                                      getCurrentUserData?.updated_at
-                                    ).fromNow()}`
+                                    getCurrentUserData?.updated_at
+                                  ).fromNow()}`
                                 : "Group Chat"}
                             </small>
                           </div>
@@ -496,30 +501,26 @@ function Chatscreen() {
                             return (
                               <li key={record?._id} className="clearfix">
                                 <div
-                                  className={`message-data ${
-                                    myMessage && "text-right"
-                                  }`}
+                                  className={`message-data ${myMessage && "text-right"
+                                    }`}
                                 >
                                   <span className="message-data-time">
                                     {`${dayjs(record?.created_at).format(
                                       "hh:mm A"
-                                    )} ${
-                                      conversationID?.type === "group"
-                                        ? `(${
-                                            record?.sender?._id !== myUserId
-                                              ? record?.sender?.name
-                                              : "You"
-                                          })`
-                                        : ""
-                                    }`}
+                                    )} ${conversationID?.type === "group"
+                                      ? `(${record?.sender?._id !== myUserId
+                                        ? record?.sender?.name
+                                        : "You"
+                                      })`
+                                      : ""
+                                      }`}
                                   </span>
                                 </div>
                                 <div
-                                  className={`message ${
-                                    myMessage
-                                      ? "other-message float-right"
-                                      : "my-message"
-                                  }`}
+                                  className={`message ${myMessage
+                                    ? "other-message float-right"
+                                    : "my-message"
+                                    }`}
                                 >
                                   {record?.message}
                                 </div>
