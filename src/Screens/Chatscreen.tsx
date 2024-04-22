@@ -20,9 +20,11 @@ import {
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import defaultImage from "../images/avatar1.png";
+import landScape from "../images/land.png";
 import { toast } from "react-toastify";
 import defaultBackImage from "../images/defaultback.png";
 import Groupmodal from "./Components/Groupmodal";
+import Imagemodal from "./Components/Imagemodal";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
@@ -40,6 +42,7 @@ function Chatscreen() {
   const chatListRef: any = useRef(null);
   const [totalCountMessage, setTotalCountMessage]: any = useState(0);
   const [scrollManager, setScrollManager]: any = useState(0);
+  const [imagePopup, setImagePopup]: any = useState(false);
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -310,6 +313,7 @@ function Chatscreen() {
   return (
     <>
       {groupPopupFlag && <Groupmodal setGroupPopupFlag={setGroupPopupFlag} />}
+      {imagePopup && <Imagemodal setImagePopup={setImagePopup} />}
       <div className="container-fluid">
         <div className="row clearfix">
           <div className="col-lg-12">
@@ -343,11 +347,10 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${
-                                      item.status === "online"
-                                        ? "online"
-                                        : "offline"
-                                    }`}
+                                    className={`fa fa-circle ${item.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                      }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -370,15 +373,14 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                              (item: any) => item._id !== myUserId
-                            );
+                            (item: any) => item._id !== myUserId
+                          );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${
-                            record?._id === conversationID?._id && "active"
-                          }`}
+                          className={`clearfix ${record?._id === conversationID?._id && "active"
+                            }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id, record)
                           }
@@ -401,17 +403,16 @@ function Chatscreen() {
                               <div className="status">
                                 {" "}
                                 <i
-                                  className={`fa fa-circle ${
-                                    getOtherUser?.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                  }`}
+                                  className={`fa fa-circle ${getOtherUser?.status === "online"
+                                    ? "online"
+                                    : "offline"
+                                    }`}
                                 ></i>{" "}
                                 {getOtherUser?.status === "online"
                                   ? "online"
                                   : `Last seen: ${dayjs(
-                                      getOtherUser?.updated_at
-                                    ).fromNow()}`}
+                                    getOtherUser?.updated_at
+                                  ).fromNow()}`}
                               </div>
                             ) : (
                               <div className="status">Group Chat</div>
@@ -444,7 +445,7 @@ function Chatscreen() {
                               src={
                                 conversationID.type === "single"
                                   ? getCurrentUserData?.avatar_url ||
-                                    defaultImage
+                                  defaultImage
                                   : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
@@ -463,8 +464,8 @@ function Chatscreen() {
                                   "online"
                                   ? getCurrentUserData?.status
                                   : `Last seen: ${dayjs(
-                                      getCurrentUserData?.updated_at
-                                    ).fromNow()}`
+                                    getCurrentUserData?.updated_at
+                                  ).fromNow()}`
                                 : "Group Chat"}
                             </small>
                           </div>
@@ -472,7 +473,7 @@ function Chatscreen() {
                       )}
                     </div>
                     <div className="col-lg-6 hidden-sm text-right">
-                      {getCurrentUserData?._id && (
+                      {conversationID?._id && (
                         <>
                           <a
                             href="#"
@@ -480,9 +481,9 @@ function Chatscreen() {
                           >
                             <i className="fa fa-file"></i>
                           </a>
-                          <a href="#" className="btn btn-outline-primary mr-2">
+                          <div onClick={() => setImagePopup(true)} className="btn btn-outline-primary mr-2">
                             <i className="fa fa-image"></i>
-                          </a>
+                          </div>
                           <a href="#" className="btn btn-outline-info mr-2">
                             <i className="fa fa-cogs"></i>
                           </a>
@@ -517,36 +518,41 @@ function Chatscreen() {
                             return (
                               <li key={record?._id} className="clearfix">
                                 <div
-                                  className={`message-data ${
-                                    myMessage && "text-right"
-                                  }`}
+                                  className={`message-data ${myMessage && "text-right"
+                                    }`}
                                 >
                                   <span className="message-data-time">
                                     {`${dayjs(record?.created_at).format(
                                       "hh:mm A"
-                                    )} ${
-                                      conversationID?.type === "group"
-                                        ? `(${
-                                            record?.sender?._id !== myUserId
-                                              ? record?.sender?.name
-                                              : "You"
-                                          })`
-                                        : ""
-                                    }`}
+                                    )} ${conversationID?.type === "group"
+                                      ? `(${record?.sender?._id !== myUserId
+                                        ? record?.sender?.name
+                                        : "You"
+                                      })`
+                                      : ""
+                                      }`}
                                   </span>
                                 </div>
                                 <div
-                                  className={`message ${
-                                    myMessage
-                                      ? "other-message float-right"
-                                      : "my-message"
-                                  }`}
+                                  className={`message ${myMessage
+                                    ? "other-message float-right"
+                                    : "my-message"
+                                    }`}
                                 >
                                   {record?.message}
                                 </div>
                               </li>
                             );
                           })}
+                        <li className="clearfix">
+                          <img
+                            style={{
+                              width: "600px",
+                              height: "320px",
+                              objectFit: "cover",
+                            }}
+                            src={landScape} alt="" />
+                        </li>
                       </ul>
                     </div>
                     <div className="chat-message clearfix">
@@ -594,7 +600,7 @@ function Chatscreen() {
             </div>
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 }
