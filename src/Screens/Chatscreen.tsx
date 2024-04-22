@@ -338,7 +338,14 @@ function Chatscreen() {
                               onClick={() => searchUserClickHandler(item._id)}
                               className="clearfix"
                             >
-                              <img src={defaultImage} alt="avatar" />
+                              <img
+                                src={
+                                  item?.avatar_url
+                                    ? item?.avatar_url
+                                    : defaultImage
+                                }
+                                alt="avatar"
+                              />
                               <div className="about">
                                 <div className="name">{item.name}</div>
                                 <div className="status">
