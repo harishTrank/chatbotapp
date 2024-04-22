@@ -64,4 +64,11 @@ export const authEndpoints = {
       uri: "message/creategroup",
     },
   },
+  uploadImageAPI: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "upload",
+    },
+  },
 };

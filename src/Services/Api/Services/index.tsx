@@ -51,3 +51,10 @@ export const createGroupApi = ({ body }: any) =>
     uriEndPoint: authEndpoints.createGroupApi.v1,
     body,
   });
+
+export const uploadImageAPI = ({ body }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.uploadImageAPI.v1,
+    body,
+    multipart: true,
+  });

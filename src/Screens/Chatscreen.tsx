@@ -23,6 +23,7 @@ import defaultImage from "../images/avatar1.png";
 import { toast } from "react-toastify";
 import defaultBackImage from "../images/defaultback.png";
 import Groupmodal from "./Components/Groupmodal";
+import Imagemodal from "./Components/Imagemodal";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
@@ -40,6 +41,7 @@ function Chatscreen() {
   const chatListRef: any = useRef(null);
   const [totalCountMessage, setTotalCountMessage]: any = useState(0);
   const [scrollManager, setScrollManager]: any = useState(0);
+  const [imagePopup, setImagePopup]: any = useState(false);
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -68,31 +70,35 @@ function Chatscreen() {
 
   // get message listing
 
+  const singleMessageApiCall = () => {
+    setTimeout(() => {
+      latestMessageList({
+        query: {
+          conversationId: conversationID?._id,
+          // messageId: data?.latestMessageId,
+        },
+      })
+        .then((res: any) => {
+          setMessageListResult((oldValue: any) => {
+            return [
+              ...oldValue.filter((item: any) => item._id !== res.data?._id),
+              res.data,
+            ];
+          });
+          setTimeout(() => {
+            chatListRef.current.scrollTo({
+              top: chatListRef?.current?.scrollHeight,
+              behavior: "smooth",
+            });
+          }, 100);
+        })
+        .catch((err: any) => console.log("err", err));
+    }, 500);
+  };
+
   const receiveMessageHandler = (data: any) => {
     if (conversationID?._id) {
-      setTimeout(() => {
-        latestMessageList({
-          query: {
-            conversationId: conversationID?._id,
-            // messageId: data?.latestMessageId,
-          },
-        })
-          .then((res: any) => {
-            setMessageListResult((oldValue: any) => {
-              return [
-                ...oldValue.filter((item: any) => item._id !== res.data?._id),
-                res.data,
-              ];
-            });
-            setTimeout(() => {
-              chatListRef.current.scrollTo({
-                top: chatListRef?.current?.scrollHeight,
-                behavior: "smooth",
-              });
-            }, 100);
-          })
-          .catch((err: any) => console.log("err", err));
-      }, 500);
+      singleMessageApiCall();
     }
   };
 
@@ -225,28 +231,7 @@ function Chatscreen() {
       message: messageInput,
     });
     setMessageInput("");
-    setTimeout(() => {
-      latestMessageList({
-        query: {
-          conversationId: conversationID?._id,
-        },
-      })
-        .then((res: any) => {
-          setMessageListResult((oldValue: any) => {
-            return [
-              ...oldValue.filter((item: any) => item._id !== res.data?._id),
-              res.data,
-            ];
-          });
-          setTimeout(() => {
-            chatListRef.current.scrollTo({
-              top: chatListRef.current.scrollHeight,
-              behavior: "smooth",
-            });
-          }, 100);
-        })
-        .catch((err: any) => console.log("err", err));
-    }, 500);
+    singleMessageApiCall();
   };
 
   const handleEnterPress = (event: any) => {
@@ -307,9 +292,35 @@ function Chatscreen() {
     };
   }, []);
 
+  const sendMessageHandlerImage = (image: any, text: any) => {
+    if (!image || image === "") {
+      toast.error("Please select a image from your computer.");
+      return;
+    }
+    sendMessage({
+      senderId: myUserId,
+      receiverIds:
+        conversationID?.type?.toLowerCase() === "group"
+          ? conversationID?.members
+          : getCurrentUserData._id,
+      type: "image",
+      conversationId: conversationID?._id,
+      message: text,
+      image: image,
+    });
+    setImagePopup(false);
+    singleMessageApiCall();
+  };
+
   return (
     <>
       {groupPopupFlag && <Groupmodal setGroupPopupFlag={setGroupPopupFlag} />}
+      {imagePopup && (
+        <Imagemodal
+          sendMessageHandlerImage={sendMessageHandlerImage}
+          setImagePopup={setImagePopup}
+        />
+      )}
       <div className="container-fluid">
         <div className="row clearfix">
           <div className="col-lg-12">
@@ -479,20 +490,23 @@ function Chatscreen() {
                       )}
                     </div>
                     <div className="col-lg-6 hidden-sm text-right">
-                      {getCurrentUserData?._id && (
+                      {conversationID?._id && (
                         <>
-                          <a
+                          {/* <a
                             href="#"
                             className="btn btn-outline-secondary mr-2"
                           >
                             <i className="fa fa-file"></i>
-                          </a>
-                          <a href="#" className="btn btn-outline-primary mr-2">
+                          </a> */}
+                          <div
+                            onClick={() => setImagePopup(true)}
+                            className="btn btn-outline-primary mr-2"
+                          >
                             <i className="fa fa-image"></i>
-                          </a>
-                          <a href="#" className="btn btn-outline-info mr-2">
+                          </div>
+                          {/* <a href="#" className="btn btn-outline-info mr-2">
                             <i className="fa fa-cogs"></i>
-                          </a>
+                          </a> */}
                         </>
                       )}
                       <div
@@ -542,15 +556,38 @@ function Chatscreen() {
                                     }`}
                                   </span>
                                 </div>
-                                <div
-                                  className={`message ${
-                                    myMessage
-                                      ? "other-message float-right"
-                                      : "my-message"
-                                  }`}
-                                >
-                                  {record?.message}
-                                </div>
+                                {record?.type === "text" ? (
+                                  <div
+                                    className={`message ${
+                                      myMessage
+                                        ? "other-message float-right"
+                                        : "my-message"
+                                    }`}
+                                  >
+                                    {record?.message}
+                                  </div>
+                                ) : (
+                                  <div
+                                    className={`message ${
+                                      myMessage
+                                        ? "other-message float-right"
+                                        : "my-message"
+                                    }`}
+                                  >
+                                    <div className="image-manager-div">
+                                      <img
+                                        style={{
+                                          width: "600px",
+                                          maxHeight: "420px",
+                                          objectFit: "contain",
+                                        }}
+                                        src={record?.image}
+                                        alt=""
+                                      />
+                                      {record?.message ? record?.message : ""}
+                                    </div>
+                                  </div>
+                                )}
                               </li>
                             );
                           })}

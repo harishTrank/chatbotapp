@@ -224,6 +224,11 @@
     height: 0;
 }
 
+.image-manager-div{
+    display: flex;
+    flex-direction: column;
+}
+
 .all-users {
     position: absolute;
     width: 100%;
