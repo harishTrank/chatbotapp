@@ -47,6 +47,10 @@ function Chatscreen() {
   const [imagePopup, setImagePopup]: any = useState(false);
   const [fullView, setFullView]: any = useState(false);
   const [imageUrl, setImageUrl]: any = useState("");
+  const playSound = () => {
+    const audioToPlay = new Audio(require("../notif.mp3"));
+    audioToPlay.play();
+  };
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -104,6 +108,7 @@ function Chatscreen() {
   const receiveMessageHandler = (data: any) => {
     if (conversationID?._id) {
       singleMessageApiCall();
+      playSound();
     }
   };
 
@@ -327,6 +332,7 @@ function Chatscreen() {
         />
       )}
       {fullView && <Imageview imageUrl={imageUrl} setFullView={setFullView} />}
+
       <div className="container-fluid">
         <div className="row clearfix">
           <div className="col-lg-12">
