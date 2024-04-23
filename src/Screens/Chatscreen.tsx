@@ -25,6 +25,8 @@ import defaultBackImage from "../images/defaultback.png";
 import Groupmodal from "./Components/Groupmodal";
 import Imagemodal from "./Components/Imagemodal";
 import Imageview from "./Components/Imageview";
+import RenderMessage from "./Components/RenderMessage";
+import { getFormattedDate } from "../Utils/UserUtils";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
@@ -45,7 +47,6 @@ function Chatscreen() {
   const [imagePopup, setImagePopup]: any = useState(false);
   const [fullView, setFullView]: any = useState(false);
   const [imageUrl, setImageUrl]: any = useState("");
-
 
   const onChangeHandler = (text: any) => {
     setSearchText(text);
@@ -366,10 +367,11 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${item.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                      }`}
+                                    className={`fa fa-circle ${
+                                      item.status === "online"
+                                        ? "online"
+                                        : "offline"
+                                    }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -392,14 +394,15 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                            (item: any) => item._id !== myUserId
-                          );
+                              (item: any) => item._id !== myUserId
+                            );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${record?._id === conversationID?._id && "active"
-                            }`}
+                          className={`clearfix ${
+                            record?._id === conversationID?._id && "active"
+                          }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id, record)
                           }
@@ -422,16 +425,17 @@ function Chatscreen() {
                               <div className="status">
                                 {" "}
                                 <i
-                                  className={`fa fa-circle ${getOtherUser?.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                    }`}
+                                  className={`fa fa-circle ${
+                                    getOtherUser?.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                  }`}
                                 ></i>{" "}
                                 {getOtherUser?.status === "online"
                                   ? "online"
                                   : `Last seen: ${dayjs(
-                                    getOtherUser?.updated_at
-                                  ).fromNow()}`}
+                                      getOtherUser?.updated_at
+                                    ).fromNow()}`}
                               </div>
                             ) : (
                               <div className="status">Group Chat</div>
@@ -464,7 +468,7 @@ function Chatscreen() {
                               src={
                                 conversationID.type === "single"
                                   ? getCurrentUserData?.avatar_url ||
-                                  defaultImage
+                                    defaultImage
                                   : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
@@ -483,8 +487,8 @@ function Chatscreen() {
                                   "online"
                                   ? getCurrentUserData?.status
                                   : `Last seen: ${dayjs(
-                                    getCurrentUserData?.updated_at
-                                  ).fromNow()}`
+                                      getCurrentUserData?.updated_at
+                                    ).fromNow()}`
                                 : "Group Chat"}
                             </small>
                           </div>
@@ -535,60 +539,39 @@ function Chatscreen() {
                     >
                       <ul className="m-b-0">
                         {messageListResult &&
-                          messageListResult?.map((record: any) => {
-                            const myMessage = myUserId === record?.sender?._id;
+                          messageListResult.map((record: any, index: any) => {
+                            const currentDate = getFormattedDate(
+                              record?.created_at
+                            );
+                            const prevDate =
+                              index > 0
+                                ? getFormattedDate(
+                                    messageListResult[index - 1]?.created_at
+                                  )
+                                : null;
+
                             return (
-                              <li key={record?._id} className="clearfix">
-                                <div
-                                  className={`message-data ${myMessage && "text-right"
-                                    }`}
-                                >
-                                  <span className="message-data-time">
-                                    {`${dayjs(record?.created_at).format(
-                                      "hh:mm A"
-                                    )} ${conversationID?.type === "group"
-                                      ? `(${record?.sender?._id !== myUserId
-                                        ? record?.sender?.name
-                                        : "You"
-                                      })`
-                                      : ""
-                                      }`}
-                                  </span>
-                                </div>
-                                {record?.type === "text" ? (
+                              <div key={record?._id}>
+                                {prevDate !== currentDate && (
                                   <div
-                                    className={`message ${myMessage
-                                      ? "other-message float-right"
-                                      : "my-message"
-                                      }`}
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "10px 0",
+                                    }}
                                   >
-                                    {record?.message}
-                                  </div>
-                                ) : (
-                                  <div
-                                    className={`message ${myMessage
-                                      ? "other-message float-right"
-                                      : "my-message"
-                                      }`}
-                                  >
-                                    <div className="image-manager-div">
-                                      <img onClick={() => {
-                                        setImageUrl(record?.image)
-                                        setFullView(true)
-                                      }}
-                                        style={{
-                                          width: "600px",
-                                          maxHeight: "420px",
-                                          objectFit: "contain",
-                                        }}
-                                        src={record?.image}
-                                        alt=""
-                                      />
-                                      {record?.message ? record?.message : ""}
-                                    </div>
+                                    <h6 className="daywisedate">
+                                      {currentDate}
+                                    </h6>
                                   </div>
                                 )}
-                              </li>
+                                <RenderMessage
+                                  record={record}
+                                  myUserId={myUserId}
+                                  conversationID={conversationID}
+                                  setImageUrl={setImageUrl}
+                                  setFullView={setFullView}
+                                />
+                              </div>
                             );
                           })}
                       </ul>

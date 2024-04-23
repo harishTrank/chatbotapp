@@ -215,6 +215,17 @@
     float: right
 }
 
+.daywisedate {
+    display: inline-block;
+    background-color: #8A4FFF;
+    color: #FFF;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+
 .clearfix:after {
     visibility: hidden;
     display: block;
