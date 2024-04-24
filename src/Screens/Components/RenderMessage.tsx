@@ -27,7 +27,9 @@ const RenderMessage = ({
           }`}
         </span>
       </div>
-      {record?.type === "text" ? (
+      {record?.deleteMessage ? (
+        <></>
+      ) : record?.type === "text" ? (
         <div
           className={`message ${
             myMessage ? "other-message float-right" : "my-message"
