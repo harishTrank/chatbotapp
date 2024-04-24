@@ -58,3 +58,9 @@ export const uploadImageAPI = ({ body }: any) =>
     body,
     multipart: true,
   });
+
+export const messageSoftDelete = ({ query }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.messageSoftDelete.v1,
+    query,
+  });

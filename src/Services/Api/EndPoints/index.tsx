@@ -71,4 +71,11 @@ export const authEndpoints = {
       uri: "upload",
     },
   },
+  messageSoftDelete: {
+    v1: {
+      ...defaults.methods.DELETE,
+      ...defaults.versions.v1,
+      uri: "message/softdelete",
+    },
+  },
 };
