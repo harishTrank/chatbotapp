@@ -1,6 +1,15 @@
 import dayjs from "dayjs";
 import React from "react";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { messageSoftDelete } from "../../Services/Api/Services";
+
+const deleteStyle = {
+  color: "#cd1421",
+  fontSize: "14px",
+  marginLeft: "5px",
+  marginTop: "12px",
+  cursor: "pointer",
+}
 
 const RenderMessage = ({
   record,
@@ -12,53 +21,71 @@ const RenderMessage = ({
   dayjs.extend(relativeTime);
   const myMessage = myUserId === record?.sender?._id;
 
+  const deleteMessageHandler = (messageId: any) => {
+    console.log('messageId', messageId)
+    messageSoftDelete({
+      query: {
+        id: messageId
+      }
+    }).then((res: any) => console.log('res', res))
+      .catch((err: any) => console.log('err', err))
+  }
+
+  console.log('record?.deleteMessage', record?.deleteMessage)
   return (
     <li className="clearfix">
       <div className={`message-data ${myMessage && "text-right"}`}>
         <span className="message-data-time">
-          {`${dayjs(record?.created_at).format("hh:mm A")} ${
-            conversationID?.type === "group"
-              ? `(${
-                  record?.sender?._id !== myUserId
-                    ? record?.sender?.name
-                    : "You"
-                })`
-              : ""
-          }`}
+          {`${dayjs(record?.created_at).format("hh:mm A")} ${conversationID?.type === "group"
+            ? `(${record?.sender?._id !== myUserId
+              ? record?.sender?.name
+              : "You"
+            })`
+            : ""
+            }`}
         </span>
       </div>
-      {record?.type === "text" ? (
+      {myMessage && !record?.deleteMessage &&
+        <i style={deleteStyle} onClick={() => deleteMessageHandler(record._id)} className="fa-solid fa-trash other-message float-right"></i>
+      }
+      {record?.deleteMessage ?
         <div
-          className={`message ${
-            myMessage ? "other-message float-right" : "my-message"
-          }`}
+          className={`message ${myMessage ? "other-message float-right" : "my-message"
+            }`}
         >
-          {record?.message}
+          {myMessage ? "🚫 You deleted this message." : "🚫 This message was deleted."}
         </div>
-      ) : (
-        <div
-          className={`message ${
-            myMessage ? "other-message float-right" : "my-message"
-          }`}
-        >
-          <div className="image-manager-div">
-            <img
-              onClick={() => {
-                setImageUrl(record?.image);
-                setFullView(true);
-              }}
-              style={{
-                width: "600px",
-                maxHeight: "420px",
-                objectFit: "contain",
-              }}
-              src={record?.image}
-              alt=""
-            />
-            {record?.message ? record?.message : ""}
+        :
+        record?.type === "text" ? (
+          <div
+            className={`message ${myMessage ? "other-message float-right" : "my-message"
+              }`}
+          >
+            {record?.message}
           </div>
-        </div>
-      )}
+        ) : (
+          <div
+            className={`message ${myMessage ? "other-message float-right" : "my-message"
+              }`}
+          >
+            <div className="image-manager-div">
+              <img
+                onClick={() => {
+                  setImageUrl(record?.image);
+                  setFullView(true);
+                }}
+                style={{
+                  width: "600px",
+                  maxHeight: "420px",
+                  objectFit: "contain",
+                }}
+                src={record?.image}
+                alt=""
+              />
+              {record?.message ? record?.message : ""}
+            </div>
+          </div>
+        )}
     </li>
   );
 };
