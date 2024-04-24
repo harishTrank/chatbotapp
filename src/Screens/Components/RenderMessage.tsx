@@ -17,21 +17,26 @@ const RenderMessage = ({
   conversationID,
   setImageUrl,
   setFullView,
+  setMessageListResult
 }: any) => {
   dayjs.extend(relativeTime);
   const myMessage = myUserId === record?.sender?._id;
 
   const deleteMessageHandler = (messageId: any) => {
-    console.log('messageId', messageId)
     messageSoftDelete({
       query: {
         id: messageId
       }
-    }).then((res: any) => console.log('res', res))
+    }).then((res: any) => {
+      setMessageListResult((oldValue: any) => oldValue.map((record: any) => {
+        return record?._id !== res._id ?
+          record :
+          res.response
+      }))
+    })
       .catch((err: any) => console.log('err', err))
   }
 
-  console.log('record?.deleteMessage', record?.deleteMessage)
   return (
     <li className="clearfix">
       <div className={`message-data ${myMessage && "text-right"}`}>
