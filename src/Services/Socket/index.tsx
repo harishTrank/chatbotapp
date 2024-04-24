@@ -20,6 +20,14 @@ const leaveConversation = (callback: any) => {
   socket.emit("leave", callback);
 };
 
+const deleteMessageSender = (callback: any) => {
+  socket.emit("delete message", callback);
+};
+
+const deleteMessageReceiver = (callback: any) => {
+  socket.on("delete message", callback);
+};
+
 const sendMessage = (callback: any) => {
   socket.emit("send message", callback);
 };
@@ -56,4 +64,6 @@ export {
   receiveMessageOff,
   conversationListRecordHit,
   conversationListRecordGet,
+  deleteMessageSender,
+  deleteMessageReceiver,
 };

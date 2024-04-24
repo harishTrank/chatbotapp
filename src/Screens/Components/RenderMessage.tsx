@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import React from "react";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { messageSoftDelete } from "../../Services/Api/Services";
+import { deleteMessageSender } from "../../Services/Socket";
 
 const deleteStyle = {
   color: "#cd1421",
@@ -17,6 +18,7 @@ const RenderMessage = ({
   conversationID,
   setImageUrl,
   setFullView,
+  getCurrentUserData,
   setMessageListResult,
 }: any) => {
   dayjs.extend(relativeTime);
@@ -29,11 +31,20 @@ const RenderMessage = ({
       },
     })
       .then((res: any) => {
-        setMessageListResult((oldValue: any) =>
-          oldValue.map((record: any) => {
-            return record?._id !== res._id ? record : res.response;
-          })
-        );
+        setMessageListResult((oldValue: any) => {
+          return oldValue.map((record: any) => {
+            return record?._id !== res.response._id
+              ? record
+              : { ...record, deleteMessage: true };
+          });
+        });
+        deleteMessageSender({
+          messageId: res.response._id,
+          receiverIds:
+            conversationID?.type?.toLowerCase() === "group"
+              ? conversationID?.members
+              : getCurrentUserData._id,
+        });
       })
       .catch((err: any) => console.log("err", err));
   };
