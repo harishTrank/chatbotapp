@@ -4,9 +4,15 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { userLogin, userRegistration } from "../Services/Api/Services";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useAtom } from "jotai";
+import { sessionChange } from "../jotai";
 
 function Login() {
   const [containerFlag, setContainerFlag] = useState(false);
+  const [, setSessionChangeAtom] = useAtom(sessionChange);
+
+  const navigate = useNavigate();
   const singUpHandler = () => {
     setContainerFlag(true);
   };
@@ -34,8 +40,10 @@ function Login() {
       .then((res: any) => {
         sessionStorage.setItem("accessToken", res?.accessToken);
         sessionStorage.setItem("userData", JSON.stringify(res?.getUser));
-        window.location.href = "/chat";
-        window.location.reload();
+        setSessionChangeAtom((oldValue: any) => oldValue + 1);
+        // window.location.href = "/chat";
+        // window.location.reload();
+        navigate("/chat");
         toast.success("Login successfully");
       })
       ?.catch((err: any) => toast.error(err.data.message));

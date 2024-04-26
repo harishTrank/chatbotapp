@@ -28,6 +28,9 @@ import Imagemodal from "./Components/Imagemodal";
 import Imageview from "./Components/Imageview";
 import RenderMessage from "./Components/RenderMessage";
 import { getFormattedDate } from "../Utils/UserUtils";
+import { sessionChange } from "../jotai";
+import { useAtom } from "jotai";
+import { useNavigate } from "react-router-dom";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
@@ -48,6 +51,7 @@ function Chatscreen() {
   const [imagePopup, setImagePopup]: any = useState(false);
   const [fullView, setFullView]: any = useState(false);
   const [imageUrl, setImageUrl]: any = useState("");
+  const [, setSessionChangeAtom] = useAtom(sessionChange);
 
   const playSound = () => {
     const audioToPlay = new Audio(require("../notif.mp3"));
@@ -231,12 +235,14 @@ function Chatscreen() {
     }
   };
 
+  const navigation = useNavigate();
+
   const logoutBtnHandler = () => {
-    sessionStorage.removeItem("userData");
-    sessionStorage.removeItem("accessToken");
+    sessionStorage.clear();
     disconnectSocket();
-    window.location.href = "/login";
-    window.location.reload();
+    setSessionChangeAtom((oldValue: any) => oldValue + 1);
+    toast.success("Logout successfully.");
+    navigation("/login");
   };
 
   const sendMessageHandler = () => {
@@ -293,7 +299,7 @@ function Chatscreen() {
     setStartMessageValue(0);
     setMessageListResult([]);
     const userDetails: any = sessionStorage.getItem("userData");
-    const myUserId = JSON.parse(userDetails)._id;
+    const myUserId = JSON.parse(userDetails)?._id;
     setMyUserId(myUserId);
     interval = setInterval(() => {
       conversationListRecordHit({
@@ -307,7 +313,7 @@ function Chatscreen() {
     return () => {
       receiveMessageOff();
       const userDetails: any = sessionStorage.getItem("userData");
-      const myUserId = JSON.parse(userDetails)._id;
+      const myUserId = JSON.parse(userDetails)?._id;
       leaveConversation({
         userId: myUserId,
       });

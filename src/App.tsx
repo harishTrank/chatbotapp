@@ -9,14 +9,17 @@ import {
 } from "react-router-dom";
 import Chatscreen from "./Screens/Chatscreen";
 import { connectSocket, disconnectSocket, heartBeat } from "./Services/Socket";
+import { useAtom } from "jotai";
+import { sessionChange } from "./jotai";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [sessionChangeAtom] = useAtom(sessionChange);
 
   useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
     let interval: any;
     const checkUserLoginFlag = () => {
-      const token = sessionStorage.getItem("accessToken");
       if (token) {
         setIsLoggedIn(true);
         connectSocket();
@@ -27,6 +30,12 @@ function App() {
             userId: currentUserId,
           });
         }, 10000);
+      } else {
+        setIsLoggedIn(false);
+        if (interval) {
+          clearInterval(interval);
+        }
+        disconnectSocket();
       }
     };
     checkUserLoginFlag();
@@ -36,7 +45,7 @@ function App() {
       }
       disconnectSocket();
     };
-  }, []);
+  }, [sessionChangeAtom]);
 
   return (
     <>
@@ -60,5 +69,3 @@ function App() {
 }
 
 export default App;
-// This message was deleted.
-// You deleted this message.
