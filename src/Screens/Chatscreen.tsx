@@ -52,6 +52,9 @@ function Chatscreen() {
   const [fullView, setFullView]: any = useState(false);
   const [imageUrl, setImageUrl]: any = useState("");
   const [, setSessionChangeAtom] = useAtom(sessionChange);
+  const [messageSearchBtnClick, setMessageSearchBtnClick]: any =
+    useState(false);
+  const [searchMessageText, setSearchMessageText]: any = useState("");
 
   const playSound = () => {
     const audioToPlay = new Audio(require("../notif.mp3"));
@@ -341,6 +344,32 @@ function Chatscreen() {
     singleMessageApiCall();
   };
 
+  const searchMessageHandler = () => {
+    messageList({
+      query: {
+        conversationId: conversationID?._id,
+      },
+    })
+      .then((res: any) => {
+        setMessageListResult(res.data.messages.reverse());
+        setMessageSearchBtnClick(true);
+      })
+      .catch((err: any) => {
+        console.log("err", err);
+      });
+  };
+
+  const upSearchMessageClick = () => {
+    // setTimeout(() => {
+    //   chatListRef.current.scrollTo({
+    //     top: chatListRef?.current?.scrollHeight,
+    //     behavior: "smooth",
+    //   });
+    // }, 100);
+  };
+
+  const downSearchMessageClick = () => {};
+
   return (
     <>
       {groupPopupFlag && <Groupmodal setGroupPopupFlag={setGroupPopupFlag} />}
@@ -392,10 +421,11 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${item.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                      }`}
+                                    className={`fa fa-circle ${
+                                      item.status === "online"
+                                        ? "online"
+                                        : "offline"
+                                    }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -418,14 +448,15 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                            (item: any) => item._id !== myUserId
-                          );
+                              (item: any) => item._id !== myUserId
+                            );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${record?._id === conversationID?._id && "active"
-                            }`}
+                          className={`clearfix ${
+                            record?._id === conversationID?._id && "active"
+                          }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id, record)
                           }
@@ -448,16 +479,17 @@ function Chatscreen() {
                               <div className="status">
                                 {" "}
                                 <i
-                                  className={`fa fa-circle ${getOtherUser?.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                    }`}
+                                  className={`fa fa-circle ${
+                                    getOtherUser?.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                  }`}
                                 ></i>{" "}
                                 {getOtherUser?.status === "online"
                                   ? "online"
                                   : `Last seen: ${dayjs(
-                                    getOtherUser?.updated_at
-                                  ).fromNow()}`}
+                                      getOtherUser?.updated_at
+                                    ).fromNow()}`}
                               </div>
                             ) : (
                               <div className="status">Group Chat</div>
@@ -490,7 +522,7 @@ function Chatscreen() {
                               src={
                                 conversationID.type === "single"
                                   ? getCurrentUserData?.avatar_url ||
-                                  defaultImage
+                                    defaultImage
                                   : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
@@ -509,8 +541,8 @@ function Chatscreen() {
                                   "online"
                                   ? getCurrentUserData?.status
                                   : `Last seen: ${dayjs(
-                                    getCurrentUserData?.updated_at
-                                  ).fromNow()}`
+                                      getCurrentUserData?.updated_at
+                                    ).fromNow()}`
                                 : "Group Chat"}
                             </small>
                           </div>
@@ -518,26 +550,45 @@ function Chatscreen() {
                       )}
                     </div>
                     <div className="col-lg-6 hidden-sm text-right flex flex-end">
-                      <div className="chat-search mr-2">
-                        <div className="mr-2">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Enter text here..."
-                          />
-                        </div>
-                        <div className="btn btn-outline-primary">
-                          <i className="fa-solid fa-search"></i>
-                        </div>
-                        {/* <div className="btn btn-outline-primary mr-2">
-                          <i className="fa-solid fa-arrow-up"></i>
-                        </div>
-                        <div className="btn btn-outline-primary">
-                          <i className="fa-solid fa-arrow-down"></i>
-                        </div> */}
-                      </div>
                       {conversationID?._id && (
                         <>
+                          <div className="chat-search mr-2">
+                            <div className="mr-2">
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter message here..."
+                                onChange={(e: any) =>
+                                  setSearchMessageText(e.target.value)
+                                }
+                                value={searchMessageText}
+                              />
+                            </div>
+
+                            {messageSearchBtnClick ? (
+                              <>
+                                <div
+                                  className="btn btn-outline-primary mr-2"
+                                  onClick={upSearchMessageClick}
+                                >
+                                  <i className="fa-solid fa-arrow-up"></i>
+                                </div>
+                                <div
+                                  className="btn btn-outline-primary"
+                                  onClick={downSearchMessageClick}
+                                >
+                                  <i className="fa-solid fa-arrow-down"></i>
+                                </div>
+                              </>
+                            ) : (
+                              <div
+                                className="btn btn-outline-primary"
+                                onClick={searchMessageHandler}
+                              >
+                                <i className="fa-solid fa-search"></i>
+                              </div>
+                            )}
+                          </div>
                           {/* <a
                             href="#"
                             className="btn btn-outline-secondary mr-2"
@@ -586,8 +637,8 @@ function Chatscreen() {
                             const prevDate =
                               index > 0
                                 ? getFormattedDate(
-                                  messageListResult[index - 1]?.created_at
-                                )
+                                    messageListResult[index - 1]?.created_at
+                                  )
                                 : null;
 
                             return (
