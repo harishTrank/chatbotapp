@@ -351,6 +351,9 @@ function Chatscreen() {
   };
 
   const searchMessageHandler = () => {
+    if (searchMessageText.length === 0) {
+      return toast.error("Please enter search text first.");
+    }
     messageList({
       query: {
         conversationId: conversationID?._id,
@@ -595,9 +598,10 @@ function Chatscreen() {
                                 type="text"
                                 className="form-control"
                                 placeholder="Enter message here..."
-                                onChange={(e: any) =>
-                                  setSearchMessageText(e.target.value)
-                                }
+                                onChange={(e: any) => {
+                                  setMessageSearchBtnClick(false);
+                                  setSearchMessageText(e.target.value);
+                                }}
                                 value={searchMessageText}
                               />
                             </div>
