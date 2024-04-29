@@ -55,6 +55,8 @@ function Chatscreen() {
   const [messageSearchBtnClick, setMessageSearchBtnClick]: any =
     useState(false);
   const [searchMessageText, setSearchMessageText]: any = useState("");
+  const [messageGetIndexs, setMessageGetIndexs]: any = useState([]);
+  const [arrowCount, setArrowCount]: any = useState(0);
 
   const playSound = () => {
     const audioToPlay = new Audio(require("../notif.mp3"));
@@ -137,6 +139,10 @@ function Chatscreen() {
     setTotalCountMessage(0);
     setScrollManager(0);
     setStartMessageValue(0);
+    setMessageSearchBtnClick(false);
+    setSearchMessageText("");
+    setMessageGetIndexs([]);
+    setArrowCount(0);
     if (conversationID?._id) {
       receiveMessageOff();
       receiveMessage(receiveMessageHandler);
@@ -286,7 +292,7 @@ function Chatscreen() {
 
   const handleScrollTop = () => {
     setScrollManager(chatListRef.current.scrollHeight);
-    if (chatListRef.current?.scrollTop === 0) {
+    if (chatListRef.current?.scrollTop === 0 && !messageSearchBtnClick) {
       setStartMessageValue((oldValue: any) =>
         totalCountMessage + 50 > oldValue ? oldValue + 50 : oldValue
       );
@@ -348,27 +354,58 @@ function Chatscreen() {
     messageList({
       query: {
         conversationId: conversationID?._id,
+        _start: 0,
+        _limit: 10000000,
       },
     })
       .then((res: any) => {
-        setMessageListResult(res.data.messages.reverse());
+        setMessageListResult(res.data.messages);
+        setMessageGetIndexs(
+          res.data.messages
+            .reverse()
+            .map((val: any, index: any) => {
+              return val.message
+                .toLowerCase()
+                .includes(searchMessageText.toLowerCase()) && !val.deleteMessage
+                ? index
+                : undefined;
+            })
+            .filter((item: any) => item !== undefined)
+            .reverse()
+        );
         setMessageSearchBtnClick(true);
+        setTimeout(() => {
+          chatListRef.current.scrollTo({
+            top: chatListRef?.current?.scrollHeight,
+            behavior: "smooth",
+          });
+        }, 100);
       })
       .catch((err: any) => {
         console.log("err", err);
       });
   };
 
-  const upSearchMessageClick = () => {
-    // setTimeout(() => {
-    //   chatListRef.current.scrollTo({
-    //     top: chatListRef?.current?.scrollHeight,
-    //     behavior: "smooth",
-    //   });
-    // }, 100);
+  const scrollToSelectedMessage = (index: number) => {
+    const selectedMessage = chatListRef.current.querySelector(
+      `#message-${index}`
+    );
+    if (selectedMessage) {
+      selectedMessage.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
-  const downSearchMessageClick = () => {};
+  const upSearchMessageClick: any = () => {
+    setArrowCount(
+      messageGetIndexs.length - 1 > arrowCount ? arrowCount + 1 : arrowCount
+    );
+    scrollToSelectedMessage(messageGetIndexs[arrowCount]);
+  };
+
+  const downSearchMessageClick = () => {
+    setArrowCount(arrowCount !== 0 ? arrowCount - 1 : arrowCount);
+    scrollToSelectedMessage(messageGetIndexs[arrowCount]);
+  };
 
   return (
     <>
@@ -663,6 +700,8 @@ function Chatscreen() {
                                   setFullView={setFullView}
                                   getCurrentUserData={getCurrentUserData}
                                   setMessageListResult={setMessageListResult}
+                                  index={index}
+                                  messageGetIndexs={messageGetIndexs}
                                 />
                               </div>
                             );

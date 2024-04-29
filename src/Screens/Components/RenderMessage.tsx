@@ -20,6 +20,8 @@ const RenderMessage = ({
   setFullView,
   getCurrentUserData,
   setMessageListResult,
+  index,
+  messageGetIndexs,
 }: any) => {
   dayjs.extend(relativeTime);
   const myMessage = myUserId === record?.sender?._id;
@@ -50,7 +52,7 @@ const RenderMessage = ({
   };
 
   return (
-    <li className="clearfix">
+    <li className="clearfix" id={`message-${index}`}>
       <div className={`message-data ${myMessage && "text-right"}`}>
         <span className="message-data-time">
           {`${dayjs(record?.created_at).format("hh:mm A")} ${
@@ -86,6 +88,9 @@ const RenderMessage = ({
           className={`message ${
             myMessage ? "other-message float-right" : "my-message"
           }`}
+          style={{
+            background: messageGetIndexs.includes(index) ? "yellow" : "#E8F1F3",
+          }}
         >
           {record?.message}
         </div>
@@ -94,6 +99,9 @@ const RenderMessage = ({
           className={`message ${
             myMessage ? "other-message float-right" : "my-message"
           }`}
+          style={{
+            background: messageGetIndexs.includes(index) ? "yellow" : "#E8F1F3",
+          }}
         >
           <div className="image-manager-div">
             <img
