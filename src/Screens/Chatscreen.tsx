@@ -355,7 +355,7 @@ function Chatscreen() {
       query: {
         conversationId: conversationID?._id,
         _start: 0,
-        _limit: 10000000,
+        _limit: 1000000000,
       },
     })
       .then((res: any) => {
