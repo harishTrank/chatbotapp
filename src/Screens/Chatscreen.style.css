@@ -235,7 +235,7 @@
     height: 0;
 }
 
-.image-manager-div{
+.image-manager-div {
     display: flex;
     flex-direction: column;
 }
@@ -274,6 +274,18 @@
 .all-users .clearfix img {
     float: left;
     border-radius: 50%
+}
+
+.chat-search {
+    display: flex;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-end {
+    justify-content: flex-end;
 }
 
 @media only screen and (max-width: 767px) {
