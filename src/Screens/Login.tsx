@@ -4,27 +4,13 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { userLogin, userRegistration } from "../Services/Api/Services";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { sessionChange } from "../jotai";
 
 function Login() {
   const [containerFlag, setContainerFlag] = useState(false);
   const [, setSessionChangeAtom] = useAtom(sessionChange);
-  const parameter = useParams();
-  console.log("parameter", parameter);
-
-  // useEffect(() => {
-  //   const queryParams = new URLSearchParams(window.location.search);
-  //   const accessToken: any = queryParams.get("accessToken");
-  //   const userData: any = queryParams.get("userData");
-  //   if (accessToken && userData) {
-  //     sessionStorage.setItem("accessToken", accessToken);
-  //     sessionStorage.setItem("userData", userData);
-  //     setSessionChangeAtom((oldValue: any) => oldValue + 1);
-  //     navigate("/chat");
-  //   }
-  // }, []);
 
   const navigate = useNavigate();
   const singUpHandler = () => {
