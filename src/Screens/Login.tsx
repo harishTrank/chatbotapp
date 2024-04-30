@@ -41,8 +41,6 @@ function Login() {
         sessionStorage.setItem("accessToken", res?.accessToken);
         sessionStorage.setItem("userData", JSON.stringify(res?.getUser));
         setSessionChangeAtom((oldValue: any) => oldValue + 1);
-        // window.location.href = "/chat";
-        // window.location.reload();
         navigate("/chat");
         toast.success("Login successfully");
       })
