@@ -1,8 +1,8 @@
 import Axios from "axios";
 import queryString from "querystring";
 
-// export const BASEURL = "http://localhost:5000";
-export const BASEURL = "http://13.201.1.67:7000";
+export const BASEURL = "http://localhost:5000";
+// export const BASEURL = "http://13.201.1.67:7000";
 // export const BASEURL = "http://13.233.209.212:5000";
 
 export const hostname = () => {
