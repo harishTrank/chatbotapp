@@ -24,7 +24,7 @@ function App() {
         setIsLoggedIn(true);
         connectSocket();
         const userData: any = sessionStorage.getItem("userData");
-        const currentUserId = JSON.parse(userData)._id;
+        const currentUserId = JSON.parse(userData)?._id;
         interval = setInterval(() => {
           heartBeat({
             userId: currentUserId,
