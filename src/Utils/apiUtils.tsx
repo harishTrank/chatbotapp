@@ -2,9 +2,9 @@ import Axios from "axios";
 import queryString from "querystring";
 
 // export const BASEURL = "http://localhost:5000";
-export const BASEURL = "http://192.168.0.71:5000";
+// export const BASEURL = "http://192.168.0.71:5000";
 // export const BASEURL = "http://13.233.209.212:5000";
-// export const BASEURL = "https://chat.happytobook.com";
+export const BASEURL = "https://chat.happytobook.com";
 
 export const hostname = () => {
   let hostUrl = `${BASEURL}/api/`;
