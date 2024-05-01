@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Chatscreen.style.css";
 import {
+  checkAdminApi,
   createConversation,
   getSingleUser,
   latestMessageList,
@@ -57,6 +58,8 @@ function Chatscreen() {
   const [searchMessageText, setSearchMessageText]: any = useState("");
   const [messageGetIndexs, setMessageGetIndexs]: any = useState([]);
   const [arrowCount, setArrowCount]: any = useState(0);
+  const [isAdminFlag, setIsAdminFlag]: any = useState(false);
+  const [editManagerFlag, setEditManagerFlag]: any = useState(false);
 
   const playSound = () => {
     const audioToPlay = new Audio(require("../notif.mp3"));
@@ -147,6 +150,14 @@ function Chatscreen() {
       receiveMessageOff();
       receiveMessage(receiveMessageHandler);
       deleteMessageReceiver(deleteMessageHandler);
+      checkAdminApi({
+        query: {
+          conversationId: conversationID?._id,
+          userId: myUserId,
+        },
+      })
+        .then((res: any) => setIsAdminFlag(res?.isAdmin))
+        .catch((err: any) => console.log("err", err));
     }
   }, [conversationID?._id]);
 
@@ -412,7 +423,13 @@ function Chatscreen() {
 
   return (
     <>
-      {groupPopupFlag && <Groupmodal setGroupPopupFlag={setGroupPopupFlag} />}
+      {groupPopupFlag && (
+        <Groupmodal
+          editManagerFlag={editManagerFlag}
+          setGroupPopupFlag={setGroupPopupFlag}
+          conversation={conversationID}
+        />
+      )}
       {imagePopup && (
         <Imagemodal
           sendMessageHandlerImage={sendMessageHandlerImage}
@@ -589,7 +606,7 @@ function Chatscreen() {
                         </>
                       )}
                     </div>
-                    <div className="col-lg-6 hidden-sm text-right flex flex-end">
+                    <div className="col-lg-6 hidden-sm text-right flex flex-end align-center">
                       {conversationID?._id && (
                         <>
                           <div className="chat-search mr-2">
@@ -647,12 +664,30 @@ function Chatscreen() {
                           </a> */}
                         </>
                       )}
-                      <div
-                        onClick={() => setGroupPopupFlag(!groupPopupFlag)}
-                        className="btn btn-outline-primary mr-2"
-                      >
-                        <i className="fa fa-user-group"></i>
-                      </div>
+
+                      {isAdminFlag && (
+                        <div
+                          className="btn btn-outline-primary mr-2"
+                          onClick={() => {
+                            setEditManagerFlag(true);
+                            setGroupPopupFlag(!groupPopupFlag);
+                          }}
+                        >
+                          <i className="fa-solid fa-user-pen"></i>
+                        </div>
+                      )}
+
+                      {conversationID?.type !== "group" && (
+                        <div
+                          onClick={() => {
+                            setEditManagerFlag(false);
+                            setGroupPopupFlag(!groupPopupFlag);
+                          }}
+                          className="btn btn-outline-primary mr-2"
+                        >
+                          <i className="fa fa-user-group"></i>
+                        </div>
+                      )}
                       <div
                         onClick={logoutBtnHandler}
                         className="btn btn-outline-danger"

@@ -64,3 +64,9 @@ export const messageSoftDelete = ({ query }: any) =>
     uriEndPoint: authEndpoints.messageSoftDelete.v1,
     query,
   });
+
+export const checkAdminApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.checkAdminApi.v1,
+    query,
+  });

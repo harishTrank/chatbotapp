@@ -78,4 +78,11 @@ export const authEndpoints = {
       uri: "message/softdelete",
     },
   },
+  checkAdminApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "message/checkadmin",
+    },
+  },
 };

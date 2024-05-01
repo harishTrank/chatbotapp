@@ -4,7 +4,11 @@ import defaultImage from "../../images/avatar1.png";
 import { createGroupApi, searchUseApi } from "../../Services/Api/Services";
 import { toast } from "react-toastify";
 
-const Groupmodal = ({ setGroupPopupFlag }: any) => {
+const Groupmodal = ({
+  setGroupPopupFlag,
+  editManagerFlag,
+  conversation,
+}: any) => {
   const [searchUserState, setSearchUserState]: any = useState("");
   const [searchFlag, setSearchFlag] = useState(false);
   const [userList, setUserList]: any = useState([]);
@@ -15,6 +19,13 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
     const userData: any = sessionStorage.getItem("userData");
     setGroupList([JSON.parse(userData)]);
   }, []);
+
+  useEffect(() => {
+    if (conversation?._id && editManagerFlag) {
+      setGroupName(conversation?.name);
+      setGroupList(conversation?.membersInfo);
+    }
+  }, [conversation?._id]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -62,27 +73,30 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
     }
   };
 
-  const createGroupHandler = () => {
+  const createAndEditGroupHandler = () => {
     const userData: any = sessionStorage.getItem("userData");
     const myUserId: any = JSON.parse(userData)?._id;
     if (!groupName) {
       toast.error("Please enter the group name.");
     } else if (groupList && groupList?.length !== 1) {
-      createGroupApi({
-        body: {
-          members: groupList.map((item: any) => item._id),
-          type: "group",
-          name: groupName,
-          groupAdmin: [myUserId],
-        },
-      })
-        .then((res: any) => {
-          setGroupPopupFlag(false);
-          toast.success("Group created successfully.");
+      if (editManagerFlag) {
+      } else {
+        createGroupApi({
+          body: {
+            members: groupList.map((item: any) => item._id),
+            type: "group",
+            name: groupName,
+            groupAdmin: [myUserId],
+          },
         })
-        .catch((err: any) => {
-          console.log("err", err);
-        });
+          .then((res: any) => {
+            setGroupPopupFlag(false);
+            toast.success("Group created successfully.");
+          })
+          .catch((err: any) => {
+            console.log("err", err);
+          });
+      }
     } else {
       toast.error("Add atleast one member.");
     }
@@ -96,7 +110,7 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
             <i className="fa-solid fa-xmark"></i>
           </div>
           <div className="group-heading">
-            <h3>Create Group Chat</h3>
+            <h3>{editManagerFlag ? "Update " : "Create "}Group Chat</h3>
           </div>
           <div className="group-body">
             <div>
@@ -180,10 +194,10 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
           </div>
           <div className="create-btn">
             <input
-              onClick={createGroupHandler}
+              onClick={createAndEditGroupHandler}
               type="submit"
               className="btn btn-info"
-              value="Create Group"
+              value={editManagerFlag ? "Update Group" : "Create Group"}
             />
           </div>
         </div>
