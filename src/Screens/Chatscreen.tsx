@@ -32,6 +32,7 @@ import { getFormattedDate } from "../Utils/UserUtils";
 import { sessionChange } from "../jotai";
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
+import DeleteGroupModel from "./Components/DeleteGroupModel";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
@@ -60,6 +61,7 @@ function Chatscreen() {
   const [arrowCount, setArrowCount]: any = useState(0);
   const [isAdminFlag, setIsAdminFlag]: any = useState(false);
   const [editManagerFlag, setEditManagerFlag]: any = useState(false);
+  const [deletePopUpFlag, setDeletePopUpFlag]: any = useState(false);
 
   const playSound = () => {
     const audioToPlay = new Audio(require("../notif.mp3"));
@@ -438,6 +440,7 @@ function Chatscreen() {
           setImagePopup={setImagePopup}
         />
       )}
+      {deletePopUpFlag && <DeleteGroupModel />}
       {fullView && <Imageview imageUrl={imageUrl} setFullView={setFullView} />}
 
       <div className="container-fluid">
@@ -680,7 +683,7 @@ function Chatscreen() {
                           </div>
                           <div
                             className="btn btn-outline-danger mr-2"
-                            onClick={() => {}}
+                            onClick={() => setDeletePopUpFlag(!deletePopUpFlag)}
                           >
                             <i className="fa-solid fa-trash"></i>
                           </div>
