@@ -85,4 +85,11 @@ export const authEndpoints = {
       uri: "message/checkadmin",
     },
   },
+  editGroupApi: {
+    v1: {
+      ...defaults.methods.PUT,
+      ...defaults.versions.v1,
+      uri: "message/editgroup",
+    },
+  },
 };

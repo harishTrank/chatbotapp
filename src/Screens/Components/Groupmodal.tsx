@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./Groupmodal.style.css";
 import defaultImage from "../../images/avatar1.png";
-import { createGroupApi, searchUseApi } from "../../Services/Api/Services";
+import { createGroupApi, editGroupApi, searchUseApi } from "../../Services/Api/Services";
 import { toast } from "react-toastify";
 
 const Groupmodal = ({
   setGroupPopupFlag,
   editManagerFlag,
   conversation,
+  setConversation,
+  setEditManagerFlag
 }: any) => {
   const [searchUserState, setSearchUserState]: any = useState("");
   const [searchFlag, setSearchFlag] = useState(false);
@@ -21,11 +23,12 @@ const Groupmodal = ({
   }, []);
 
   useEffect(() => {
-    if (conversation?._id && editManagerFlag) {
+    console.log('11111111', 11111111, conversation)
+    if (editManagerFlag) {
       setGroupName(conversation?.name);
       setGroupList(conversation?.membersInfo);
     }
-  }, [conversation?._id]);
+  }, [editManagerFlag]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -80,6 +83,24 @@ const Groupmodal = ({
       toast.error("Please enter the group name.");
     } else if (groupList && groupList?.length !== 1) {
       if (editManagerFlag) {
+        editGroupApi({
+          query: {
+            id: conversation._id,
+          },
+          body: {
+            members: groupList.map((item: any) => item._id),
+            type: "group",
+            name: groupName,
+            groupAdmin: [myUserId],
+          },
+        })
+          .then((res: any) => {
+            toast.success(res.message);
+            setGroupPopupFlag(false);
+            setConversation(res.response);
+            setEditManagerFlag(false);
+          })
+          .catch((err: any) => console.log('err', err))
       } else {
         createGroupApi({
           body: {
@@ -106,7 +127,10 @@ const Groupmodal = ({
     <>
       <div className="create-group">
         <div className="inside-group">
-          <div className="top-group" onClick={() => setGroupPopupFlag(false)}>
+          <div className="top-group" onClick={() => {
+            setGroupPopupFlag(false);
+            setEditManagerFlag(false);
+          }}>
             <i className="fa-solid fa-xmark"></i>
           </div>
           <div className="group-heading">
@@ -155,11 +179,10 @@ const Groupmodal = ({
                             <div className="name">{item.name}</div>
                             <div className="status">
                               <i
-                                className={`fa fa-circle ${
-                                  item.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                }`}
+                                className={`fa fa-circle ${item.status === "online"
+                                  ? "online"
+                                  : "offline"
+                                  }`}
                               ></i>
                               {item.status}
                             </div>

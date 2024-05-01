@@ -70,3 +70,9 @@ export const checkAdminApi = ({ query }: any) =>
     uriEndPoint: authEndpoints.checkAdminApi.v1,
     query,
   });
+export const editGroupApi = ({ query, body }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.editGroupApi.v1,
+    query,
+    body,
+  });
