@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./Groupmodal.style.css";
-import defaultImage from "../../images/avatar1.png";
-import { createGroupApi, editGroupApi, searchUseApi } from "../../Services/Api/Services";
+import defaultImage from "../../images/trank.png";
+import {
+  createGroupApi,
+  editGroupApi,
+  searchUseApi,
+} from "../../Services/Api/Services";
 import { toast } from "react-toastify";
 
 const Groupmodal = ({
@@ -9,7 +13,7 @@ const Groupmodal = ({
   editManagerFlag,
   conversation,
   setConversation,
-  setEditManagerFlag
+  setEditManagerFlag,
 }: any) => {
   const [searchUserState, setSearchUserState]: any = useState("");
   const [searchFlag, setSearchFlag] = useState(false);
@@ -23,7 +27,7 @@ const Groupmodal = ({
   }, []);
 
   useEffect(() => {
-    console.log('11111111', 11111111, conversation)
+    console.log("11111111", 11111111, conversation);
     if (editManagerFlag) {
       setGroupName(conversation?.name);
       setGroupList(conversation?.membersInfo);
@@ -100,7 +104,7 @@ const Groupmodal = ({
             setConversation(res.response);
             setEditManagerFlag(false);
           })
-          .catch((err: any) => console.log('err', err))
+          .catch((err: any) => console.log("err", err));
       } else {
         createGroupApi({
           body: {
@@ -127,10 +131,13 @@ const Groupmodal = ({
     <>
       <div className="create-group">
         <div className="inside-group">
-          <div className="top-group" onClick={() => {
-            setGroupPopupFlag(false);
-            setEditManagerFlag(false);
-          }}>
+          <div
+            className="top-group"
+            onClick={() => {
+              setGroupPopupFlag(false);
+              setEditManagerFlag(false);
+            }}
+          >
             <i className="fa-solid fa-xmark"></i>
           </div>
           <div className="group-heading">
@@ -179,10 +186,11 @@ const Groupmodal = ({
                             <div className="name">{item.name}</div>
                             <div className="status">
                               <i
-                                className={`fa fa-circle ${item.status === "online"
-                                  ? "online"
-                                  : "offline"
-                                  }`}
+                                className={`fa fa-circle ${
+                                  item.status === "online"
+                                    ? "online"
+                                    : "offline"
+                                }`}
                               ></i>
                               {item.status}
                             </div>
