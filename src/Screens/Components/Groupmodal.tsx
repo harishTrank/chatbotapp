@@ -27,7 +27,6 @@ const Groupmodal = ({
   }, []);
 
   useEffect(() => {
-    console.log("11111111", 11111111, conversation);
     if (editManagerFlag) {
       setGroupName(conversation?.name);
       setGroupList(conversation?.membersInfo);
@@ -186,11 +185,10 @@ const Groupmodal = ({
                             <div className="name">{item.name}</div>
                             <div className="status">
                               <i
-                                className={`fa fa-circle ${
-                                  item.status === "online"
+                                className={`fa fa-circle ${item.status === "online"
                                     ? "online"
                                     : "offline"
-                                }`}
+                                  }`}
                               ></i>
                               {item.status}
                             </div>

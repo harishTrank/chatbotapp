@@ -108,3 +108,18 @@
 .create-btn {
     text-align: right;
 }
+
+.yes-no button {
+    width: 49%;
+    background: red;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    padding: 5px 0;
+    color: #fff;
+}
+
+.yes-no button.yes {
+    margin-right: 1%;
+    background: green;
+}
