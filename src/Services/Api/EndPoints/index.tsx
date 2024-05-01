@@ -92,4 +92,11 @@ export const authEndpoints = {
       uri: "message/editgroup",
     },
   },
+  deleteGroupApi: {
+    v1: {
+      ...defaults.methods.DELETE,
+      ...defaults.versions.v1,
+      uri: "message/deletegroup",
+    },
+  },
 };

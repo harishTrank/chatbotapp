@@ -668,15 +668,23 @@ function Chatscreen() {
                       )}
 
                       {isAdminFlag && (
-                        <div
-                          className="btn btn-outline-primary mr-2"
-                          onClick={() => {
-                            setEditManagerFlag(true);
-                            setGroupPopupFlag(!groupPopupFlag);
-                          }}
-                        >
-                          <i className="fa-solid fa-user-pen"></i>
-                        </div>
+                        <>
+                          <div
+                            className="btn btn-outline-primary mr-2"
+                            onClick={() => {
+                              setEditManagerFlag(true);
+                              setGroupPopupFlag(!groupPopupFlag);
+                            }}
+                          >
+                            <i className="fa-solid fa-user-pen"></i>
+                          </div>
+                          <div
+                            className="btn btn-outline-danger mr-2"
+                            onClick={() => {}}
+                          >
+                            <i className="fa-solid fa-trash"></i>
+                          </div>
+                        </>
                       )}
 
                       {conversationID?.type !== "group" && (
