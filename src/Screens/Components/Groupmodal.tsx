@@ -63,6 +63,8 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
   };
 
   const createGroupHandler = () => {
+    const userData: any = sessionStorage.getItem("userData");
+    const myUserId: any = JSON.parse(userData)?._id;
     if (!groupName) {
       toast.error("Please enter the group name.");
     } else if (groupList && groupList?.length !== 1) {
@@ -71,6 +73,7 @@ const Groupmodal = ({ setGroupPopupFlag }: any) => {
           members: groupList.map((item: any) => item._id),
           type: "group",
           name: groupName,
+          groupAdmin: [myUserId],
         },
       })
         .then((res: any) => {
