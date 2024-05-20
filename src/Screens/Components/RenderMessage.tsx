@@ -90,6 +90,7 @@ const RenderMessage = ({
           }`}
           style={{
             background: messageGetIndexs.includes(index) ? "yellow" : "#E8F1F3",
+            whiteSpace: "pre-wrap",
           }}
         >
           {record?.message}

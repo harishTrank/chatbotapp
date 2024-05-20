@@ -62,6 +62,19 @@ function Chatscreen() {
   const [isAdminFlag, setIsAdminFlag]: any = useState(false);
   const [editManagerFlag, setEditManagerFlag]: any = useState(false);
   const [deletePopUpFlag, setDeletePopUpFlag]: any = useState(false);
+  const textareaRef: any = useRef(null);
+
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // Reset the height
+      textarea.style.height = `${textarea.scrollHeight}px`; // Set the height to match the scroll height
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [messageInput]);
 
   const playSound = () => {
     const audioToPlay = new Audio(require("../notif.mp3"));
@@ -287,7 +300,14 @@ function Chatscreen() {
 
   const handleEnterPress = (event: any) => {
     if (event.key === "Enter") {
-      sendMessageHandler();
+      if (event.shiftKey) {
+        // Allow newline with Shift + Enter
+        setMessageInput((prev: any) => prev);
+      } else {
+        // Prevent default behavior of Enter key
+        event.preventDefault();
+        sendMessageHandler();
+      }
     }
   };
 
@@ -423,6 +443,13 @@ function Chatscreen() {
     scrollToSelectedMessage(messageGetIndexs[arrowCount]);
   };
 
+  const handlePaste = (event: any) => {
+    event.preventDefault();
+    const text = event.clipboardData.getData("text");
+    const formattedText = text.replace(/\r\n|\r|\n/g, "\n");
+    setMessageInput((prevValue: any) => prevValue + formattedText);
+  };
+
   return (
     <>
       {groupPopupFlag && (
@@ -440,7 +467,13 @@ function Chatscreen() {
           setImagePopup={setImagePopup}
         />
       )}
-      {deletePopUpFlag && <DeleteGroupModel setConversation={setConversationID} conversation={conversationID} setDeletePopUpFlag={setDeletePopUpFlag} />}
+      {deletePopUpFlag && (
+        <DeleteGroupModel
+          setConversation={setConversationID}
+          conversation={conversationID}
+          setDeletePopUpFlag={setDeletePopUpFlag}
+        />
+      )}
       {fullView && <Imageview imageUrl={imageUrl} setFullView={setFullView} />}
 
       <div className="container-fluid">
@@ -483,10 +516,11 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${item.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                      }`}
+                                    className={`fa fa-circle ${
+                                      item.status === "online"
+                                        ? "online"
+                                        : "offline"
+                                    }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -509,14 +543,15 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                            (item: any) => item._id !== myUserId
-                          );
+                              (item: any) => item._id !== myUserId
+                            );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${record?._id === conversationID?._id && "active"
-                            }`}
+                          className={`clearfix ${
+                            record?._id === conversationID?._id && "active"
+                          }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id, record)
                           }
@@ -539,16 +574,17 @@ function Chatscreen() {
                               <div className="status">
                                 {" "}
                                 <i
-                                  className={`fa fa-circle ${getOtherUser?.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                    }`}
+                                  className={`fa fa-circle ${
+                                    getOtherUser?.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                  }`}
                                 ></i>{" "}
                                 {getOtherUser?.status === "online"
                                   ? "online"
                                   : `Last seen: ${dayjs(
-                                    getOtherUser?.updated_at
-                                  ).fromNow()}`}
+                                      getOtherUser?.updated_at
+                                    ).fromNow()}`}
                               </div>
                             ) : (
                               <div className="status">Group Chat</div>
@@ -581,7 +617,7 @@ function Chatscreen() {
                               src={
                                 conversationID.type === "single"
                                   ? getCurrentUserData?.avatar_url ||
-                                  defaultImage
+                                    defaultImage
                                   : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
@@ -600,8 +636,8 @@ function Chatscreen() {
                                   "online"
                                   ? getCurrentUserData?.status
                                   : `Last seen: ${dayjs(
-                                    getCurrentUserData?.updated_at
-                                  ).fromNow()}`
+                                      getCurrentUserData?.updated_at
+                                    ).fromNow()}`
                                 : "Group Chat"}
                             </small>
                           </div>
@@ -723,8 +759,8 @@ function Chatscreen() {
                             const prevDate =
                               index > 0
                                 ? getFormattedDate(
-                                  messageListResult[index - 1]?.created_at
-                                )
+                                    messageListResult[index - 1]?.created_at
+                                  )
                                 : null;
 
                             return (
@@ -767,7 +803,7 @@ function Chatscreen() {
                             <i className="fa-solid fa-paper-plane"></i>
                           </span>
                         </div>
-                        <input
+                        {/* <input
                           type="text"
                           className="form-control"
                           placeholder="Enter text here..."
@@ -776,7 +812,25 @@ function Chatscreen() {
                           onChange={(event: any) =>
                             setMessageInput(event.target.value)
                           }
-                        />
+                        /> */}
+                        <textarea
+                          ref={textareaRef}
+                          style={{
+                            maxHeight: "200px",
+                            overflow: "hidden",
+                            resize: "none", // Prevent manual resizing
+                          }}
+                          value={messageInput}
+                          onChange={(event: any) =>
+                            setMessageInput(event.target.value)
+                          }
+                          onKeyDown={handleEnterPress}
+                          className="form-control"
+                          onPaste={handlePaste}
+                          rows={1}
+                          cols={50}
+                          placeholder="Enter text here..."
+                        ></textarea>
                       </div>
                     </div>
                   </>
