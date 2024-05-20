@@ -10,11 +10,24 @@ import {
 import Chatscreen from "./Screens/Chatscreen";
 import { connectSocket, disconnectSocket, heartBeat } from "./Services/Socket";
 import { useAtom } from "jotai";
-import { sessionChange } from "./jotai";
+import { messageCountJotai, sessionChange } from "./jotai";
+import $ from "jquery";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [sessionChangeAtom] = useAtom(sessionChange);
+
+  const [messageCount]: any = useAtom(messageCountJotai);
+
+  useEffect(() => {
+    $("#headerid").html(
+      messageCount > 100
+        ? `(99+) Chat App`
+        : messageCount > 0
+        ? `(${messageCount}) Chat App`
+        : "Chat App"
+    );
+  }, [messageCount]);
 
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");

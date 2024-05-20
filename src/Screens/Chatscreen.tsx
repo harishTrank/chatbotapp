@@ -29,7 +29,7 @@ import Imagemodal from "./Components/Imagemodal";
 import Imageview from "./Components/Imageview";
 import RenderMessage from "./Components/RenderMessage";
 import { getFormattedDate } from "../Utils/UserUtils";
-import { sessionChange } from "../jotai";
+import { messageCountJotai, sessionChange } from "../jotai";
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
 import DeleteGroupModel from "./Components/DeleteGroupModel";
@@ -449,6 +449,19 @@ function Chatscreen() {
     const formattedText = text.replace(/\r\n|\r|\n/g, "\n");
     setMessageInput((prevValue: any) => prevValue + formattedText);
   };
+
+  const [, setMessageCount]: any = useAtom(messageCountJotai);
+  useEffect(() => {
+    const resultTotal = conversationResult.reduce(
+      (total: any, conversation: any) => {
+        const unreadCount = conversation.unread_count?.[0]?.total_count || 0;
+        return total + unreadCount;
+      },
+      0
+    );
+
+    setMessageCount(resultTotal);
+  }, [conversationResult]);
 
   return (
     <>
