@@ -33,6 +33,7 @@ import { messageCountJotai, sessionChange } from "../jotai";
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
 import DeleteGroupModel from "./Components/DeleteGroupModel";
+import html2canvas from "html2canvas";
 
 function Chatscreen() {
   dayjs.extend(relativeTime);
@@ -63,6 +64,7 @@ function Chatscreen() {
   const [editManagerFlag, setEditManagerFlag]: any = useState(false);
   const [deletePopUpFlag, setDeletePopUpFlag]: any = useState(false);
   const textareaRef: any = useRef(null);
+  const [image, setImage] = useState<string | null>(null);
 
   const adjustTextareaHeight = () => {
     const textarea = textareaRef.current;
@@ -298,13 +300,11 @@ function Chatscreen() {
     singleMessageApiCall();
   };
 
-  const handleEnterPress = (event: any) => {
+  const handleEnterPress = async (event: any) => {
     if (event.key === "Enter") {
       if (event.shiftKey) {
-        // Allow newline with Shift + Enter
         setMessageInput((prev: any) => prev);
       } else {
-        // Prevent default behavior of Enter key
         event.preventDefault();
         sendMessageHandler();
       }
@@ -443,11 +443,34 @@ function Chatscreen() {
     scrollToSelectedMessage(messageGetIndexs[arrowCount]);
   };
 
-  const handlePaste = (event: any) => {
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     event.preventDefault();
-    const text = event.clipboardData.getData("text");
-    const formattedText = text.replace(/\r\n|\r|\n/g, "\n");
-    setMessageInput((prevValue: any) => prevValue + formattedText);
+
+    // Handle text paste
+    const clipboardText = event.clipboardData.getData("text");
+    if (clipboardText) {
+      const formattedText = clipboardText.replace(/\r\n|\r|\n/g, "\n");
+      setMessageInput((prevValue: any) => prevValue + formattedText);
+    }
+
+    // Handle image paste
+    const items: any = event.clipboardData.items;
+    for (let item of items) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === "string") {
+              setImagePopup(true);
+              setImage(reader.result);
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+        event.preventDefault();
+      }
+    }
   };
 
   const [, setMessageCount]: any = useAtom(messageCountJotai);
@@ -478,6 +501,8 @@ function Chatscreen() {
         <Imagemodal
           sendMessageHandlerImage={sendMessageHandlerImage}
           setImagePopup={setImagePopup}
+          image={image}
+          setImage={setImage}
         />
       )}
       {deletePopUpFlag && (
