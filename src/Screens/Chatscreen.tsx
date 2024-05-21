@@ -486,8 +486,8 @@ function Chatscreen() {
     );
     if (currentMessageCount !== resultTotal) {
       playSound();
+      setMessageCount(resultTotal);
     }
-    setMessageCount(resultTotal);
   }, [conversationResult]);
 
   return (
