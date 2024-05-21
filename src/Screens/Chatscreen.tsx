@@ -33,7 +33,6 @@ import { messageCountJotai, sessionChange } from "../jotai";
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
 import DeleteGroupModel from "./Components/DeleteGroupModel";
-import html2canvas from "html2canvas";
 import Editprofile from "./Components/Editprofile";
 
 function Chatscreen() {
@@ -475,7 +474,8 @@ function Chatscreen() {
     }
   };
 
-  const [, setMessageCount]: any = useAtom(messageCountJotai);
+  const [currentMessageCount, setMessageCount]: any =
+    useAtom(messageCountJotai);
   useEffect(() => {
     const resultTotal = conversationResult.reduce(
       (total: any, conversation: any) => {
@@ -484,7 +484,9 @@ function Chatscreen() {
       },
       0
     );
-
+    if (currentMessageCount !== resultTotal) {
+      playSound();
+    }
     setMessageCount(resultTotal);
   }, [conversationResult]);
 
@@ -515,8 +517,9 @@ function Chatscreen() {
         />
       )}
       {fullView && <Imageview imageUrl={imageUrl} setFullView={setFullView} />}
-      {editProfileFlag && <Editprofile setEditProfileFlag={setEditProfileFlag} />}
-
+      {editProfileFlag && (
+        <Editprofile setEditProfileFlag={setEditProfileFlag} />
+      )}
 
       <div className="container-fluid">
         <div className="row clearfix">
@@ -558,10 +561,11 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${item.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                      }`}
+                                    className={`fa fa-circle ${
+                                      item.status === "online"
+                                        ? "online"
+                                        : "offline"
+                                    }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -584,14 +588,15 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                            (item: any) => item._id !== myUserId
-                          );
+                              (item: any) => item._id !== myUserId
+                            );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${record?._id === conversationID?._id && "active"
-                            }`}
+                          className={`clearfix ${
+                            record?._id === conversationID?._id && "active"
+                          }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id, record)
                           }
@@ -614,16 +619,17 @@ function Chatscreen() {
                               <div className="status">
                                 {" "}
                                 <i
-                                  className={`fa fa-circle ${getOtherUser?.status === "online"
-                                    ? "online"
-                                    : "offline"
-                                    }`}
+                                  className={`fa fa-circle ${
+                                    getOtherUser?.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                  }`}
                                 ></i>{" "}
                                 {getOtherUser?.status === "online"
                                   ? "online"
                                   : `Last seen: ${dayjs(
-                                    getOtherUser?.updated_at
-                                  ).fromNow()}`}
+                                      getOtherUser?.updated_at
+                                    ).fromNow()}`}
                               </div>
                             ) : (
                               <div className="status">Group Chat</div>
@@ -656,7 +662,7 @@ function Chatscreen() {
                               src={
                                 conversationID.type === "single"
                                   ? getCurrentUserData?.avatar_url ||
-                                  defaultImage
+                                    defaultImage
                                   : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
@@ -675,8 +681,8 @@ function Chatscreen() {
                                   "online"
                                   ? getCurrentUserData?.status
                                   : `Last seen: ${dayjs(
-                                    getCurrentUserData?.updated_at
-                                  ).fromNow()}`
+                                      getCurrentUserData?.updated_at
+                                    ).fromNow()}`
                                 : "Group Chat"}
                             </small>
                           </div>
@@ -739,7 +745,6 @@ function Chatscreen() {
                           {/* <a href="#" className="btn btn-outline-info mr-2">
                             <i className="fa fa-cogs"></i>
                           </a> */}
-
                         </>
                       )}
 
@@ -805,8 +810,8 @@ function Chatscreen() {
                             const prevDate =
                               index > 0
                                 ? getFormattedDate(
-                                  messageListResult[index - 1]?.created_at
-                                )
+                                    messageListResult[index - 1]?.created_at
+                                  )
                                 : null;
 
                             return (
