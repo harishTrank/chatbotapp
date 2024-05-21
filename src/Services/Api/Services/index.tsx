@@ -82,3 +82,10 @@ export const deleteGroupApi = ({ query }: any) =>
     uriEndPoint: authEndpoints.deleteGroupApi.v1,
     query,
   });
+
+export const editUserProfileApi = ({ query, body }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.editUserProfileApi.v1,
+    query,
+    body,
+  });

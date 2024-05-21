@@ -99,4 +99,11 @@ export const authEndpoints = {
       uri: "message/deletegroup",
     },
   },
+  editUserProfileApi: {
+    v1: {
+      ...defaults.methods.PUT,
+      ...defaults.versions.v1,
+      uri: "user/editprofile",
+    },
+  },
 };
