@@ -779,12 +779,12 @@ function Chatscreen() {
                           <i className="fa fa-user-group"></i>
                         </div>
                       )}
-                      <div
+                      {/* <div
                         onClick={() => setEditProfileFlag(true)}
                         className="btn btn-outline-primary mr-2"
                       >
                         <i className="fa-solid fa-user-pen"></i>
-                      </div>
+                      </div> */}
                       <div
                         onClick={logoutBtnHandler}
                         className="btn btn-outline-danger"
