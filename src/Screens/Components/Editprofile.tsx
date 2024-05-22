@@ -38,7 +38,12 @@ const Editprofile = ({ setEditProfileFlag }: any) => {
       query: {
         id: myUserId,
       },
-      body: currentUser,
+      body: {
+        name: currentUser?.name,
+        avatar_url: currentUser?.avatar_url
+          ? currentUser?.avatar_url
+          : undefined,
+      },
     })
       .then(() => {
         toast.success("Edit profile successfully.");
