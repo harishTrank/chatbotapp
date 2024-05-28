@@ -490,6 +490,19 @@ function Chatscreen() {
     }
   }, [conversationResult]);
 
+  const setCursorToEndAndScroll = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.focus();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      textarea.scrollTop = textarea.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    setCursorToEndAndScroll();
+  }, [messageInput]);
+
   return (
     <>
       {groupPopupFlag && (
@@ -561,11 +574,10 @@ function Chatscreen() {
                                 <div className="name">{item.name}</div>
                                 <div className="status">
                                   <i
-                                    className={`fa fa-circle ${
-                                      item.status === "online"
-                                        ? "online"
-                                        : "offline"
-                                    }`}
+                                    className={`fa fa-circle ${item.status === "online"
+                                      ? "online"
+                                      : "offline"
+                                      }`}
                                   ></i>
                                   {item.status}
                                 </div>
@@ -588,15 +600,14 @@ function Chatscreen() {
                         record?.membersInfo?.length === 1
                           ? record?.membersInfo?.[0]
                           : record?.membersInfo?.find(
-                              (item: any) => item._id !== myUserId
-                            );
+                            (item: any) => item._id !== myUserId
+                          );
 
                       return (
                         <li
                           key={record?._id}
-                          className={`clearfix ${
-                            record?._id === conversationID?._id && "active"
-                          }`}
+                          className={`clearfix ${record?._id === conversationID?._id && "active"
+                            }`}
                           onClick={() =>
                             searchUserClickHandler(getOtherUser?._id, record)
                           }
@@ -619,17 +630,16 @@ function Chatscreen() {
                               <div className="status">
                                 {" "}
                                 <i
-                                  className={`fa fa-circle ${
-                                    getOtherUser?.status === "online"
-                                      ? "online"
-                                      : "offline"
-                                  }`}
+                                  className={`fa fa-circle ${getOtherUser?.status === "online"
+                                    ? "online"
+                                    : "offline"
+                                    }`}
                                 ></i>{" "}
                                 {getOtherUser?.status === "online"
                                   ? "online"
                                   : `Last seen: ${dayjs(
-                                      getOtherUser?.updated_at
-                                    ).fromNow()}`}
+                                    getOtherUser?.updated_at
+                                  ).fromNow()}`}
                               </div>
                             ) : (
                               <div className="status">Group Chat</div>
@@ -662,7 +672,7 @@ function Chatscreen() {
                               src={
                                 conversationID.type === "single"
                                   ? getCurrentUserData?.avatar_url ||
-                                    defaultImage
+                                  defaultImage
                                   : conversationID.avatar_url || defaultImage
                               }
                               alt="avatar"
@@ -681,8 +691,8 @@ function Chatscreen() {
                                   "online"
                                   ? getCurrentUserData?.status
                                   : `Last seen: ${dayjs(
-                                      getCurrentUserData?.updated_at
-                                    ).fromNow()}`
+                                    getCurrentUserData?.updated_at
+                                  ).fromNow()}`
                                 : "Group Chat"}
                             </small>
                           </div>
@@ -810,8 +820,8 @@ function Chatscreen() {
                             const prevDate =
                               index > 0
                                 ? getFormattedDate(
-                                    messageListResult[index - 1]?.created_at
-                                  )
+                                  messageListResult[index - 1]?.created_at
+                                )
                                 : null;
 
                             return (
@@ -868,8 +878,7 @@ function Chatscreen() {
                           ref={textareaRef}
                           style={{
                             maxHeight: "200px",
-                            overflow: "hidden",
-                            resize: "none", // Prevent manual resizing
+                            resize: "none",
                           }}
                           value={messageInput}
                           onChange={(event: any) =>

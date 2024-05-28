@@ -13,7 +13,8 @@
     width: 280px;
     padding: 10px;
     border-right: 1px solid #eaeaea;
-    overflow: auto;
+    height: 100vh;
+    overflow-x: auto;
 }
 
 .chat-app .chat {
