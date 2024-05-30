@@ -80,8 +80,8 @@ function Chatscreen() {
   }, [messageInput]);
 
   const playSound = () => {
-    // const audioToPlay = new Audio(require("../notif.mp3"));
-    // audioToPlay.play();
+    const audioToPlay = new Audio(require("../notif.mp3"));
+    audioToPlay?.play();
   };
 
   const onChangeHandler = (text: string) => {
@@ -449,6 +449,19 @@ function Chatscreen() {
       setMessageCount(resultTotal);
     }
   }, [conversationResult]);
+
+  const setCursorToEndAndScroll = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.focus();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      textarea.scrollTop = textarea.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    setCursorToEndAndScroll();
+  }, [messageInput]);
 
   return (
     <>
@@ -828,8 +841,7 @@ function Chatscreen() {
                           ref={textareaRef}
                           style={{
                             maxHeight: "200px",
-                            overflow: "hidden",
-                            resize: "none", // Prevent manual resizing
+                            resize: "none",
                           }}
                           value={messageInput}
                           onChange={(event: any) => {
