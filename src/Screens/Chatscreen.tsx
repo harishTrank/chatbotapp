@@ -35,6 +35,7 @@ import { useNavigate } from "react-router-dom";
 import DeleteGroupModel from "./Components/DeleteGroupModel";
 import Editprofile from "./Components/Editprofile";
 
+// getConversationList
 dayjs.extend(relativeTime);
 function Chatscreen() {
   const [searchFlag, setSearchFlag] = useState(false);
@@ -303,30 +304,46 @@ function Chatscreen() {
     }
   };
 
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     const initializeChatList = async () => {
-      let interval: NodeJS.Timeout;
       setTotalCountMessage(0);
       setScrollManager(0);
       setStartMessageValue(0);
       setMessageListResult([]);
+
       const userDetails: any = sessionStorage.getItem("userData");
-      const myUserId = JSON.parse(userDetails)?._id;
+      const parsedUserDetails = JSON.parse(userDetails);
+      const myUserId = parsedUserDetails ? parsedUserDetails._id : null;
       setMyUserId(myUserId);
-      conversationListRecordHit({ userId: myUserId });
-      interval = setInterval(() => {
-        conversationListRecordHit({ userId: myUserId });
-      }, 5000);
-      conversationListRecordGet((data: any) => {
-        setConversationResult(data);
-      });
-      return () => {
-        receiveMessageOff();
-        leaveConversation({ userId: myUserId });
-        clearInterval(interval);
+
+      const fetchData = async () => {
+        if (myUserId) {
+          conversationListRecordHit({ userId: myUserId });
+          conversationListRecordGet((data: any) => {
+            setConversationResult(data);
+          });
+        }
       };
+
+      await fetchData();
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      intervalRef.current = setInterval(fetchData, 2500);
     };
+
     initializeChatList();
+
+    return () => {
+      receiveMessageOff();
+      if (myUserId) {
+        leaveConversation({ userId: myUserId });
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
   const sendMessageHandlerImage = async (image: string, text: string) => {
