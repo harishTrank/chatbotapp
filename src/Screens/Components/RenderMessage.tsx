@@ -24,7 +24,8 @@ const RenderMessage = ({
   messageGetIndexs,
 }: any) => {
   dayjs.extend(relativeTime);
-  const myMessage = myUserId === record?.sender?._id;
+  const myMessage =
+    myUserId === record?.sender?._id || record?.sender === myUserId;
 
   const deleteMessageHandler = (messageId: any) => {
     messageSoftDelete({
@@ -58,7 +59,8 @@ const RenderMessage = ({
           {`${dayjs(record?.created_at).format("hh:mm A")} ${
             conversationID?.type === "group"
               ? `(${
-                  record?.sender?._id !== myUserId
+                  record?.sender?._id !== myUserId ||
+                  record?.sender !== myUserId
                     ? record?.sender?.name
                     : "You"
                 })`

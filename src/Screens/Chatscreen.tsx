@@ -128,7 +128,16 @@ function Chatscreen() {
 
   const receiveMessageHandler = (data: any) => {
     if (conversationID?._id) {
-      singleMessageApiCall();
+      setMessageListResult((oldValue) => [
+        ...oldValue.filter((item) => item._id !== data?.latestMessage?._id),
+        data?.latestMessage,
+      ]);
+      setTimeout(() => {
+        chatListRef.current?.scrollTo({
+          top: chatListRef.current?.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 100);
       playSound();
     }
   };
